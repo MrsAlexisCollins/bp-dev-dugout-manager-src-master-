@@ -1,6 +1,6 @@
 import sqlalchemy
-import settings
-import mapping
+from . import settings
+from . import mapping
 from mapping import People
 from sqlalchemy import create_engine
 from sqlalchemy.orm  import Session

@@ -1,5 +1,5 @@
 import sqlalchemy
-import settings
+from . import settings
 
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
