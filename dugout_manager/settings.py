@@ -2,6 +2,10 @@ import os
 
 # Database connections and credentials 
 # basecoach has R on cage, RW on dugout
-BP_DUGOUT_URL = 'postgres://basecoach:wavethemin@172.104.15.153/dugout'
-BP_CAGE_URL = 'postgres://basecoach:wavethemin@172.104.15.153/cage' 
- 
+
+
+try:
+    from local_settings import *
+except ImportError as exc:
+    import warnings
+    warnings.warn('Could not import local_settings: %s' % exc)
