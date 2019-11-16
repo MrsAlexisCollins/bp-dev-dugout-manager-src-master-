@@ -1,4 +1,4 @@
-# This script pulls in data from the CAGE.  
+# saves data to the DUGOUT
 
 import sqlalchemy
 from sqlalchemy import create_engine
@@ -9,8 +9,7 @@ from .. import settings
 from .mapping import People
 
 
-engine = create_engine(settings.BP_CAGE_URL) 
+engine = create_engine(settings.BP_DUGOUT_URL) 
 session = Session(engine)
 
-persons = session.query(People).filter_by(fullname="Keith Hernandez").all()
 

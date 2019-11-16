@@ -1,5 +1,7 @@
+# defines and maps the database objects in CAGE and DUGOUT
+
 import sqlalchemy
-from . import settings
+from .. import settings
 
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
@@ -16,7 +18,7 @@ class People(Base):
     __table_args__ = {'schema': 'ingest'}
 
     def __repr__(self):
-        return "<Person(id=%i, full_name='%s')>" % (
+        return "<Person(bpid=%i, use_full_name='%s')>" % (
             self.bpid, self.fullname)
 
  
