@@ -4,8 +4,8 @@ import os
 # basecoach has R on cage, RW on dugout
 
 
-os.environ['dugout'] = 'postgres://basecoach:wavethemin@172.104.15.153/dugout'
-os.environ['cage']  = 'postgres://basecoach:wavethemin@172.104.15.153/cage' 
+os.environ['dugout'] = 'postgres://basecoach:wavethemin@localhost/dugout'
+os.environ['cage'] = 'postgres://basecoach:wavethemin@172.104.15.153/cage'  
  
 
 BP_DUGOUT_URL = os.environ['dugout']
