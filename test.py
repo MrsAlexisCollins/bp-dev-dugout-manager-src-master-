@@ -1,2 +1,3 @@
-from dugout_manager.entitas.load import persons
-print(persons)
+
+from dugout_manager.mlb_entitas.load import mlb_persons 
+print(mlb_persons.all()) 

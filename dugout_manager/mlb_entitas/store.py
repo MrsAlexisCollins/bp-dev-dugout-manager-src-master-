@@ -6,7 +6,7 @@ from sqlalchemy.orm  import Session
 
 from .. import settings
 
-from .mapping import People
+from .mapping import Mlb_people
 
 
 engine = create_engine(settings.BP_DUGOUT_URL) 

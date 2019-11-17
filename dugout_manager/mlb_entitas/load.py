@@ -6,11 +6,12 @@ from sqlalchemy.orm  import Session
 
 from .. import settings
 
-from .mapping import People
+from .mapping import Mlb_people
+from .mapping import Bp_xref
 
 
 engine = create_engine(settings.BP_CAGE_URL) 
 session = Session(engine)
 
-persons = session.query(People).filter_by(fullname="Keith Hernandez").all()
+mlb_persons = session.query(Mlb_people).limit(100) 
 
