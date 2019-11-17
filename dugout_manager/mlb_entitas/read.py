@@ -6,13 +6,7 @@ from sqlalchemy.orm  import Session
 
 from .. import settings
 
-from .mapping import Mlb_people
-from .mapping import Bp_xref
-
-
 engine = create_engine(settings.BP_CAGE_URL) 
-session = Session(engine)
+session_read = Session(engine)
 
 ## manage the acquistion of data here
-mlb_persons = session.query(Mlb_people).join(Bp_xref).limit(15)
-

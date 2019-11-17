@@ -1,15 +1,25 @@
 
-from dugout_manager.mlb_entitas.read import mlb_persons  
+from dugout_manager.mlb_entitas.read import session_read  
+from dugout_manager.mlb_entitas.write import session_write
+from dugout_manager.mlb_entitas.mapping import Bp_people, Bp_xref, Mlb_people
+
 from datetime import datetime
 
-uploads = []
+mlb_persons = session_read.query(Mlb_people).join(Bp_xref).limit(15)
 
-for result in mlb_persons.all():
-    row = {} 
-    row['bpid'] = result.bpxref[0].bpid
-    row['use_full_name'] = result.full_name
-    row['updated_timestamp'] = datetime.now() 
+new_entries = []
 
-    uploads.append(row)
+for row in mlb_persons:
+   for xref in row.bpxref:
+    new_entry = {}
+    new_entry['bpid'] =  xref.bpid
+    new_entry['use_full_name'] = row.full_name
+    new_entry['updated_timestamp'] = datetime.now()  
+    
+    new_entries.append(new_entry)
 
-print(uploads) 
+for new_entry in new_entries:
+    row = Bp_people(**new_entry)
+    session_write.add(row)
+
+session_write.commit()
