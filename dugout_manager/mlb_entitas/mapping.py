@@ -3,12 +3,14 @@
 import sqlalchemy
 from .. import settings
 
-from sqlalchemy import Column, Integer, String , ForeignKey
+from sqlalchemy import Column, Integer, String , ForeignKey, DateTime
 from sqlalchemy.ext.declarative import declarative_base 
 from sqlalchemy.orm import relationship
 
-
 Base = declarative_base()
+
+
+## inbound
 
 class Mlb_people(Base): 
     __tablename__ = 'people'
@@ -37,3 +39,19 @@ class Bp_xref(Base):
         return "<Bpxref(bpid=%i)>" % (
             self.bpid )
 
+
+
+## outbound
+ 
+class Bp_people(Base): 
+    __tablename__ = 'people'
+
+    bpid = Column(Integer, primary_key = True)
+    use_full_name = Column(String) 
+    updated_timestamp = Column(DateTime)
+
+    __table_args__ = {'schema': 'entitas'}
+
+    def __repr__(self):
+        return "a dugout person %s %i   " % (
+          self.use_full_name ,   self.bpid)
