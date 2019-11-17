@@ -13,5 +13,5 @@ from .mapping import Bp_xref
 engine = create_engine(settings.BP_CAGE_URL) 
 session = Session(engine)
 
-mlb_persons = session.query(Mlb_people).limit(100) 
+mlb_persons = session.query(Mlb_people).join(Bp_xref).limit(250)
 

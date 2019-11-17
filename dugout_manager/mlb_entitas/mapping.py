@@ -20,8 +20,8 @@ class Mlb_people(Base):
     __table_args__ = {'schema': 'mlbapi'}
 
     def __repr__(self):
-        return "<Person(mlbid=%i, full_name='%s' %s)>" % (
-            self.id  , self.full_name , self.bpxref)
+        return "\n%s %i %i " % (
+          self.full_name ,   self.id  , self.bpxref[0].bpid)
 
 
 class Bp_xref(Base): 
