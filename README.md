@@ -9,7 +9,7 @@ CREATE TABLE entitas.people (
 	bpid int4 NOT NULL,
 	use_full_name text NOT NULL,
 	use_sortable_name text NOT NULL,
-	use_short_name text NOT NULL,
+	use_short_name text NULL,
 	last_name text NULL,
 	middle_name text NULL,
 	middle_initial text NULL,
