@@ -19,7 +19,7 @@ for row in mlb_persons:
     new_entries.append(new_entry)
 
 for new_entry in new_entries:
-    row = Bp_people(**new_entry)
-    session_write.add(row)
+    new_row = Bp_people(**new_entry)
+    session_write.add(new_row)
 
 session_write.commit()
