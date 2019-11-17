@@ -15,14 +15,13 @@ class Mlb_people(Base):
 
     id = Column(Integer, primary_key = True)
     full_name = Column(String)
-
-    bpid = relationship( "Bp_xref" , back_populates="mlbid")
+    bpxref = relationship( "Bp_xref" , back_populates="mlbpeople")
      
     __table_args__ = {'schema': 'mlbapi'}
 
     def __repr__(self):
         return "<Person(mlbid=%i, full_name='%s' %s)>" % (
-            self.id  , self.full_name , self.bpid)
+            self.id  , self.full_name , self.bpxref)
 
 
 class Bp_xref(Base): 
@@ -30,12 +29,11 @@ class Bp_xref(Base):
 
     bpid = Column(Integer, primary_key = True)
     mlb = Column(Integer, ForeignKey('mlbapi.people.id')) 
-
-    mlbid = relationship("Mlb_people", back_populates="bpid")
+    mlbpeople = relationship("Mlb_people", back_populates="bpxref")
 
     __table_args__ = {'schema': 'ingest'}
 
     def __repr__(self):
-        return "<Bpxref(bpid=%s)>" % (
+        return "<Bpxref(bpid=%i)>" % (
             self.bpid )
 
