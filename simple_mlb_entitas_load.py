@@ -15,7 +15,7 @@ for row in mlb_persons:
     new_entry['updated_timestamp'] = datetime.now()  
     for xref in row.bpxref:
         new_entry['bpid'] =  xref.bpid
-    for nameref in row.mlbpeople_names:
+    for nameref in row.people_names:
         new_entry['use_sortable_name'] =  nameref.use_name
 
     new_entries.append(new_entry)
