@@ -5,7 +5,7 @@ import os
 
 #write local read remote
 os.environ['dugout'] = 'postgres://user:pwd@localhost/dugout'
-os.environ['cage'] = 'postgres://basecoach:wavethemin@172.104.15.153/cage'  
+os.environ['cage'] = 'postgres://user:pwd@172.104.15.153/cage'  
  
 
 BP_DUGOUT_URL = os.environ['dugout']
