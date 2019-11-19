@@ -13,17 +13,9 @@ mlb_teams = session_read.query(Mlb_teams).join(Mlb_leagues,  Mlb_levels).filter(
     Mlb_teams.active == 'True',Mlb_levels.code.in_(['win','aaa', 'aax','afa','afx','asx','rok','roa', 'mlb'])
     ).order_by(Mlb_levels.code).all()
 
-mlb_teams_selfref  = session_read.query(Mlb_teams).order_by(Mlb_teams.id).all()
-
 mlb_levels = session_read.query(Mlb_levels).all()
 mlb_leagues = session_read.query(Mlb_leagues).all()
 mlb_divisions = session_read.query(Mlb_divisions).all() 
-
-# for row in organizations:
-#     print(row.org_name, row.governing_bodies.gov_bod_name)
-
-# for row in mlb_teams:
-#     print(row.id, row.name, row.levels.code, row.parent_org )
 
 level_count = session_write.query(func.count(Bp_levels.level_id)).scalar()
 level_entries = []
@@ -35,10 +27,26 @@ for row in mlb_levels:
     new_entry['gov_bod_id'] = 1
     new_entry['updated_timestamp'] = datetime.now()  
     level_entries.append(new_entry)
-    
+
 for new_entry in level_entries:
     new_row = Bp_levels(**new_entry)
     session_write.add(new_row)
+
+league_count = session_write.query(func.count(Bp_leagues.league_id)).scalar()
+league_entries = []
+for row in mlb_leagues:
+    new_entry = {}
+    league_count += 1
+    new_entry['league_id'] = league_count
+    new_entry['league_name'] = row.abbreviation
+    new_entry['gov_bod_id'] = 1
+    new_entry['updated_timestamp'] = datetime.now()  
+    level_entries.append(new_entry)
+
+for new_entry in league_entries:
+    new_row = Bp_leagues(**new_entry)
+    session_write.add(new_row)
+
 
 
 #session_write.commit()
