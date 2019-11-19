@@ -40,3 +40,4 @@ insert into entitas.organizations (org_id, org_name, gov_bod_id, updated_timesta
 insert into entitas.organizations (org_id, org_name, gov_bod_id, updated_timestamp) values (28,'TEX',1,now());
 insert into entitas.organizations (org_id, org_name, gov_bod_id, updated_timestamp) values (29,'TOR',1,now());
 insert into entitas.organizations (org_id, org_name, gov_bod_id, updated_timestamp) values (30,'WAS',1,now());
+insert into entitas.organizations (org_id, org_name, gov_bod_id, updated_timestamp) values (31,'orphan',1,now());

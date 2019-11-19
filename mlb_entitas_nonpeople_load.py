@@ -20,7 +20,7 @@ mlb_divisions = session_read.query(Mlb_divisions).join(Mlb_leagues,  Mlb_levels)
     Mlb_levels.code.in_(['win','aaa', 'aax','afa','afx','asx','rok','roa', 'mlb'])
 ).all() 
 
-level_count = session_write.query(func.count(Bp_levels.level_id)).scalar()
+level_count = session_write.query(func.count(Bp_levels.level_id)).scalar() #this should change to be max() not count()
 level_entries = []
 for level_row in mlb_levels:
     new_level_entry = {}
@@ -37,7 +37,7 @@ for level_entry in level_entries:
 
 
 
-league_count = session_write.query(func.count(Bp_leagues.league_id)).scalar()
+league_count = session_write.query(func.count(Bp_leagues.league_id)).scalar() #this should change to be max() not count()
 league_entries = []
 for league_row in mlb_leagues:
     new_league_entry = {}
@@ -53,7 +53,7 @@ for league_entry in league_entries:
     session_write.add(new_league_row)
 
 
-division_count = session_write.query(func.count(Bp_divisions.division_id)).scalar()
+division_count = session_write.query(func.count(Bp_divisions.division_id)).scalar() #this should change to be max() not count()
 division_entries = []
 for division_row in mlb_divisions:
     new_division_entry = {}
@@ -69,4 +69,4 @@ for division_entry in division_entries:
     new_division_row = Bp_divisions(**division_entry)
     session_write.add(new_division_row)
 
-session_write.commit()
+#session_write.commit()

@@ -2,7 +2,7 @@
 from dugout_manager.mlb_entitas.read import session_read  
 from dugout_manager.mlb_entitas.write import session_write
 from dugout_manager.mlb_entitas.mapping import Mlb_leagues, Mlb_levels, Mlb_divisions, Mlb_teams, Bp_leagues, Bp_divisions, Bp_levels, Bp_organizations, Bp_teams, Bp_governing_bodies
-from sqlalchemy import func
+from sqlalchemy import func, exists
 from datetime import datetime
 
 bp_governing_bodies = session_write.query(Bp_governing_bodies)
@@ -20,7 +20,7 @@ mlb_teams = all_mlb_teams.join(Mlb_leagues,  Mlb_levels,  Mlb_divisions).filter(
 ).order_by(Mlb_levels.code).all()
 
 
-team_count = session_write.query(func.count(Bp_teams.team_id)).scalar()
+team_count = session_write.query(func.count(Bp_teams.team_id)).scalar() #this should change to be max() not count()
 team_entries = []
 for team_row in mlb_teams:
     new_team_entry = {}
@@ -28,10 +28,13 @@ for team_row in mlb_teams:
     new_team_entry['team_id']  = team_count
     new_team_entry['team_name']  = team_row.name
 
-    # todo: handle none case
-    parent_abbrev = all_mlb_teams.filter(Mlb_teams.id==team_row.parent_org).first() 
-    #print(parent_abbrev.abbreviation )
-    new_team_entry['org_id']  = bp_organizations.filter(Bp_organizations.org_name=="WAS").first().org_id
+    # todo: handle none case with 31:orphan
+    parent_abbrev = all_mlb_teams.filter(Mlb_teams.id==team_row.parent_org).first()
+    if not parent_abbrev: 
+        new_team_entry['org_id']  = bp_organizations.filter(Bp_organizations.org_name=="orphan").first().org_id
+    else: 
+        print (team_row.parent_org,parent_abbrev)
+        new_team_entry['org_id']  = bp_organizations.filter(Bp_organizations.org_name==parent_abbrev.abbreviation).first().org_id
     
 
 
