@@ -9,13 +9,15 @@ from datetime import datetime
 organizations = session_write.query(Bp_organizations).join(Bp_governing_bodies).all()
 
 ######### fetch data FROM CAGE
-mlb_teams = session_read.query(Mlb_teams).join(Mlb_leagues,  Mlb_levels).all()
+mlb_teams = session_read.query(Mlb_teams).join(Mlb_leagues,  Mlb_levels).filter(
+    Mlb_teams.active == 'True',Mlb_levels.code.in_(['win','aaa', 'aax','afa','afx','asx','rok','roa', 'mlb'])
+    ).order_by(Mlb_levels.code).all()
  
 
-for row in organizations:
-    print(row.org_name, row.governing_bodies.gov_bod_name)
+#for row in organizations:
+   # print(row.org_name, row.governing_bodies.gov_bod_name)
 
 for row in mlb_teams:
-    print(row.name, row.levels.name, row.leagues.name, row.parent_org)
+    print(row.id, row.name, row.levels.code, row.parent_org )
 
 
