@@ -23,5 +23,6 @@ for row in mlb_persons:
 for new_entry in new_entries:
     new_row = Bp_people(**new_entry)
     session_write.add(new_row)
+    print(new_row)
 
-session_write.commit()
+#session_write.commit()
