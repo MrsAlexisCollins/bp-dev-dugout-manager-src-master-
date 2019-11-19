@@ -6,7 +6,8 @@ from sqlalchemy import func
 from datetime import datetime
 
 ######### TO DO dupe management
-
+bp_governing_bodies = session_write.query(Bp_governing_bodies)
+bp_leagues = session_write.query(Bp_leagues)
 ######### fetch data FROM CAGE
 
 mlb_levels = session_read.query(Mlb_levels).filter(
@@ -26,7 +27,7 @@ for level_row in mlb_levels:
     level_count += 1
     new_level_entry['level_id'] = level_count
     new_level_entry['level_name'] = level_row.code
-    new_level_entry['gov_bod_id'] = session_write.query(Bp_governing_bodies).filter(Bp_governing_bodies.gov_bod_name=='Major League Baseball').first().gov_bod_id
+    new_level_entry['gov_bod_id'] = bp_governing_bodies.filter(Bp_governing_bodies.gov_bod_name=='Major League Baseball').first().gov_bod_id
     new_level_entry['updated_timestamp'] = datetime.now()  
     level_entries.append(new_level_entry)
 
@@ -43,7 +44,7 @@ for league_row in mlb_leagues:
     league_count += 1
     new_league_entry['league_id'] = league_count
     new_league_entry['league_name'] = league_row.abbreviation
-    new_league_entry['gov_bod_id'] = session_write.query(Bp_governing_bodies).filter(Bp_governing_bodies.gov_bod_name=='Major League Baseball').first().gov_bod_id
+    new_league_entry['gov_bod_id'] = bp_governing_bodies.filter(Bp_governing_bodies.gov_bod_name=='Major League Baseball').first().gov_bod_id
     new_league_entry['updated_timestamp'] = datetime.now()  
     league_entries.append(new_league_entry)
 
@@ -59,8 +60,8 @@ for division_row in mlb_divisions:
     division_count += 1
     new_division_entry['division_id'] = division_count
     new_division_entry['division_name'] = division_row.abbreviation
-    new_division_entry['league_id'] = session_write.query(Bp_leagues).filter(Bp_leagues.league_name==division_row.leagues.abbreviation).first().league_id
-    new_division_entry['gov_bod_id'] = session_write.query(Bp_leagues).filter(Bp_leagues.league_name==division_row.leagues.abbreviation).first().gov_bod_id
+    new_division_entry['league_id'] = bp_leagues.filter(Bp_leagues.league_name==division_row.leagues.abbreviation).first().league_id
+    new_division_entry['gov_bod_id'] = bp_leagues.filter(Bp_leagues.league_name==division_row.leagues.abbreviation).first().gov_bod_id
     new_division_entry['updated_timestamp'] = datetime.now()  
     division_entries.append(new_division_entry)
 
