@@ -1,7 +1,7 @@
 
 from dugout_manager.mlb_entitas.read import session_read  
 from dugout_manager.mlb_entitas.write import session_write
-from dugout_manager.mlb_entitas.mapping import Mlb_leagues, Mlb_levels, Mlb_divisions, Mlb_teams, Bp_leagues, Bp_levels, Bp_organizations, Bp_teams, Bp_governing_bodies
+from dugout_manager.mlb_entitas.mapping import Mlb_leagues, Mlb_levels, Mlb_divisions, Mlb_teams, Bp_leagues, Bp_divisions, Bp_levels, Bp_organizations, Bp_teams, Bp_governing_bodies
 from sqlalchemy import func
 from datetime import datetime
 
@@ -41,10 +41,26 @@ for row in mlb_leagues:
     new_entry['league_name'] = row.abbreviation
     new_entry['gov_bod_id'] = 1
     new_entry['updated_timestamp'] = datetime.now()  
-    level_entries.append(new_entry)
+    league_entries.append(new_entry)
 
 for new_entry in league_entries:
     new_row = Bp_leagues(**new_entry)
+    session_write.add(new_row)
+
+division_count = session_write.query(func.count(Bp_divisions.division_id)).scalar()
+division_entries = []
+for row in mlb_divisions:
+    new_entry = {}
+    division_count += 1
+    new_entry['division_id'] = division_count
+    new_entry['division_name'] = row.abbreviation
+    new_entry['league_id'] = mlb_divisions.leauge # this is wrong ... that will be the wrong value need to map it right
+    new_entry['gov_bod_id'] = 1
+    new_entry['updated_timestamp'] = datetime.now()  
+    division_entries.append(new_entry)
+
+for new_entry in division_entries:
+    new_row = Bp_divisions(**new_entry)
     session_write.add(new_row)
 
 
