@@ -9,7 +9,7 @@ from datetime import datetime
 all_mlb_teams = session_read.query(Mlb_teams)
 bp_teams = session_write.query(Bp_teams)
 
-mlb_people_roster_status = session_read.query(Mlb_people_roster_status).join(Mlb_people,Bp_xref).limit(1)
+mlb_people_roster_status = session_read.query(Mlb_people_roster_status).join(Mlb_people,Bp_xref).all()
 
 new_status_entries = []
 
@@ -21,9 +21,12 @@ for row in mlb_people_roster_status:
 
 
     new_status_entry_team = all_mlb_teams.filter(Mlb_teams.id == row.current_team).first()
-    new_status_entry_team_bp = bp_teams.filter(Bp_teams.team_name ==  new_status_entry_team.name  ).first()
-    if new_status_entry_team_bp:
-        new_status_entry['current_team'] =  new_status_entry_team_bp.team_id
+    if new_status_entry_team:   
+        new_status_entry_team_bp = bp_teams.filter(Bp_teams.team_name ==  new_status_entry_team.name  ).first()
+        if new_status_entry_team_bp:
+            new_status_entry['current_team'] =  new_status_entry_team_bp.team_id
+        else:
+            new_status_entry['current_team'] = None
     else:
         new_status_entry['current_team'] = None
     
@@ -31,13 +34,6 @@ for row in mlb_people_roster_status:
     new_status_entry['mlb_debut_date'] = row.mlb_debut_date
     new_status_entry['updated_timestamp']  = datetime.now()  
 
-    new_status_entries.append(new_status_entry)
-    print(new_status_entry)
-
-
-for status_entry in new_status_entries:
-    new_status_entry_row = Bp_people_roster_status(**status_entry)
+    new_status_entry_row = Bp_people_roster_status(**new_status_entry)
     session_write.add(new_status_entry_row) 
-
-
-# session_write.commit()
+    session_write.commit()
