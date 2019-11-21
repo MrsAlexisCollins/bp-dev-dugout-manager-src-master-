@@ -45,7 +45,6 @@ for row in mlb_people_roster_entries:
     new_roster_entry['updated_timestamp'] = datetime.now()  
 
     new_roster_entries.append(new_roster_entry)
-    print(new_roster_entry)
 
 
 for roster_entry in new_roster_entries:
