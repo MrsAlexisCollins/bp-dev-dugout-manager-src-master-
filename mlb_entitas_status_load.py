@@ -36,4 +36,4 @@ for row in mlb_people_roster_status:
 
     new_status_entry_row = Bp_people_roster_status(**new_status_entry)
     session_write.add(new_status_entry_row) 
-    session_write.commit()
+    #session_write.commit()
