@@ -14,7 +14,11 @@ last_bp_roster_entry_status_date = session_write.query(func.max(Bp_people_roster
 #
 mlb_people_roster_entries = session_read.query(Mlb_people_roster_entries).filter(
     Mlb_people_roster_entries.status_date > last_bp_roster_entry_status_date
-    ).join(Mlb_people,Bp_xref).all()
+    ).all()
+
+print(session_read.query(Mlb_people_roster_entries).filter(
+    Mlb_people_roster_entries.status_date > last_bp_roster_entry_status_date
+    )  )
 
 new_roster_entries = [] 
 

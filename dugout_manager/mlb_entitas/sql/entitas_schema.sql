@@ -267,6 +267,7 @@ CREATE TABLE entitas.team_rosters (
 	jersey_number int4 NULL,
 	"position" text NULL,
 	status text NULL,
+	updated_timestamp timestamptz NOT NULL DEFAULT now(),
 	CONSTRAINT team_rosters_pkey PRIMARY KEY (team, "timestamp", player),
 	CONSTRAINT team_rosters_player_fkey FOREIGN KEY (player) REFERENCES entitas.people(bpid) ON DELETE RESTRICT,
 	CONSTRAINT team_rosters_team_fkey FOREIGN KEY (team) REFERENCES entitas.teams(team_id) ON DELETE RESTRICT

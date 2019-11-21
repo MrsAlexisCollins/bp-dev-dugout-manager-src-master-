@@ -426,6 +426,7 @@ class Bp_team_rosters(Base):
     jersey_number  = Column(Integer) 
     position  = Column(String) 
     status  = Column(String)  
+    updated_timestamp  = Column(DateTime)  
     people = relationship("Bp_people", back_populates="team_rosters")	
     teams = relationship("Bp_teams", back_populates="team_rosters")	
     def __repr__(self):
