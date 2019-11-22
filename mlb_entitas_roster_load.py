@@ -2,6 +2,7 @@
 from dugout_manager.mlb_entitas.read import session_read  
 from dugout_manager.mlb_entitas.write import session_write
 from dugout_manager.mlb_entitas.mapping import Bp_xref, Mlb_people_roster_entries,  Bp_teams, Bp_people_roster_entries,  Mlb_teams,Mlb_people
+from sqlalchemy.sql.expression import func
 
 from datetime import datetime
 
@@ -9,7 +10,15 @@ from datetime import datetime
 all_mlb_teams = session_read.query(Mlb_teams)
 bp_teams = session_write.query(Bp_teams)
 
-mlb_people_roster_entries = session_read.query(Mlb_people_roster_entries).join(Mlb_people,Bp_xref).all()
+last_bp_roster_entry_status_date = session_write.query(func.max(Bp_people_roster_entries.status_date)).scalar()
+#
+mlb_people_roster_entries = session_read.query(Mlb_people_roster_entries).filter(
+    Mlb_people_roster_entries.status_date > last_bp_roster_entry_status_date
+    ).all()
+
+print(session_read.query(Mlb_people_roster_entries).filter(
+    Mlb_people_roster_entries.status_date > last_bp_roster_entry_status_date
+    )  )
 
 new_roster_entries = [] 
 
@@ -36,13 +45,11 @@ for row in mlb_people_roster_entries:
     new_roster_entry['updated_timestamp'] = datetime.now()  
 
     new_roster_entries.append(new_roster_entry)
-    
 
 
 for roster_entry in new_roster_entries:
     new_roster_entry_row = Bp_people_roster_entries(**roster_entry)
     session_write.add(new_roster_entry_row) 
-
 
 
 # session_write.commit()

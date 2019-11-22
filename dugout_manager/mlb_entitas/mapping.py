@@ -13,6 +13,22 @@ Base = declarative_base()
 ## inbound
 
 
+class Mlb_team_rosters(Base):
+    __tablename__ = 'team_rosters'
+    __table_args__ = {'schema': 'mlbapi'}
+
+    team = Column(Integer, ForeignKey('mlbapi.teams.id'), primary_key = True) 
+    timestamp = Column(DateTime, primary_key = True)  
+    player = Column(Integer, ForeignKey('mlbapi.people.id'), primary_key = True)
+    jersey_number  = Column(Integer) 
+    position  = Column(String) 
+    status  = Column(String)  
+    people = relationship("Mlb_people", back_populates="team_rosters")	
+    teams = relationship("Mlb_teams", back_populates="team_rosters")	
+    def __repr__(self):
+        return "{}({!r})".format(self.__class__.__name__, self.__dict__)
+
+
 class Mlb_levels(Base):
     __tablename__ = 'levels'
     __table_args__ = {'schema': 'mlbapi'}
@@ -41,6 +57,7 @@ class Mlb_people(Base):
     people_roster_entries = relationship("Mlb_people_roster_entries", back_populates="people")	
     people_roster_status = relationship("Mlb_people_roster_status", back_populates="people")	
     people_transactions = relationship("Mlb_people_transactions", back_populates="people")
+    team_rosters = relationship("Mlb_team_rosters", back_populates="people")
     def __repr__(self):
         return "{}({!r})".format(self.__class__.__name__, self.__dict__)
 
@@ -229,6 +246,7 @@ class Mlb_teams(Base):
     divisions = relationship("Mlb_divisions", back_populates="teams")
     people_roster_entries = relationship("Mlb_people_roster_entries", back_populates="teams")	
     people_roster_status = relationship("Mlb_people_roster_status", back_populates="teams")	 
+    team_rosters = relationship("Mlb_team_rosters", back_populates="teams")
     def __repr__(self):
         return "{}({!r})".format(self.__class__.__name__, self.__dict__)
 
@@ -280,6 +298,7 @@ class Bp_people(Base):
     updated_timestamp  = Column(DateTime)  
     people_roster_entries = relationship("Bp_people_roster_entries", back_populates="people")
     people_roster_status = relationship("Bp_people_roster_status", back_populates="people")
+    team_rosters = relationship("Bp_team_rosters", back_populates="people")
     def __repr__(self):
         return "{}({!r})".format(self.__class__.__name__, self.__dict__)
 
@@ -356,6 +375,7 @@ class Bp_teams(Base):
     divisions = relationship("Bp_divisions", back_populates="teams")
     people_roster_entries = relationship("Bp_people_roster_entries", back_populates="teams")
     people_roster_status = relationship("Bp_people_roster_status", back_populates="teams")
+    team_rosters = relationship("Bp_team_rosters", back_populates="teams")
     def __repr__(self):
         return "{}({!r})".format(self.__class__.__name__, self.__dict__)
 
@@ -396,5 +416,20 @@ class Bp_people_roster_status(Base):
 
 
 
+class Bp_team_rosters(Base):
+    __tablename__ = 'team_rosters'
+    __table_args__ = {'schema': 'entitas'}
+
+    team = Column(Integer, ForeignKey('entitas.teams.team_id'), primary_key = True) 
+    timestamp = Column(DateTime, primary_key = True)  
+    player = Column(Integer, ForeignKey('entitas.people.bpid'), primary_key = True)
+    jersey_number  = Column(Integer) 
+    position  = Column(String) 
+    status  = Column(String)  
+    updated_timestamp  = Column(DateTime)  
+    people = relationship("Bp_people", back_populates="team_rosters")	
+    teams = relationship("Bp_teams", back_populates="team_rosters")	
+    def __repr__(self):
+        return "{}({!r})".format(self.__class__.__name__, self.__dict__)
 
 
