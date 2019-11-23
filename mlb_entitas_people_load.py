@@ -1,6 +1,6 @@
 
-from dugout_manager.mlb_entitas.read import session_read  
-from dugout_manager.mlb_entitas.write import session_write
+from dugout_manager.read import session_read  
+from dugout_manager.write import session_write
 from dugout_manager.mlb_entitas.mapping import Bp_people, Bp_xref, Mlb_people, Mlb_people_names
 
 from datetime import datetime
