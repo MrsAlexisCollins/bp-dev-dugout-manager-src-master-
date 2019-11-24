@@ -8,9 +8,9 @@ all_mlb_teams = session_read.query(Mlb_teams)
 bp_teams = session_write.query(Bp_teams)
 ######### TO DO dupe management
 
-mlb_stats_hitting = session_read.query(Mlb_stats_hitting).join(Mlb_people, Bp_xref).all()
-hitting_entries = []
-for row in mlb_stats_hitting:
+mlb_stats_pitching = session_read.query(Mlb_stats_pitching).join(Mlb_people, Bp_xref).all()
+
+for row in mlb_stats_pitching:
     new_entry = {}
     for xref in row.people.bpxref:
         new_entry['bpid'] =  xref.bpid 
@@ -25,6 +25,7 @@ for row in mlb_stats_hitting:
 
     new_entry['timestamp'] = row.timestamp
     new_entry['games_played'] = row.games_played
+    new_entry['games_started'] = row.games_started
     new_entry['ground_outs'] = row.ground_outs
     new_entry['air_outs'] = row.air_outs
     new_entry['runs'] = row.runs
@@ -35,7 +36,6 @@ for row in mlb_stats_hitting:
     new_entry['base_on_balls'] = row.base_on_balls
     new_entry['intentional_walks'] = row.intentional_walks
     new_entry['hits'] = row.hits
-    new_entry['hit_by_pitch'] = row.hit_by_pitch
     new_entry['avg'] = row.avg
     new_entry['at_bats'] = row.at_bats
     new_entry['obp'] = row.obp
@@ -46,16 +46,41 @@ for row in mlb_stats_hitting:
     new_entry['stolen_base_percentage'] = row.stolen_base_percentage
     new_entry['ground_into_double_play'] = row.ground_into_double_play
     new_entry['number_of_pitches'] = row.number_of_pitches
-    new_entry['plate_appearances'] = row.plate_appearances
+    new_entry['era'] = row.era
+    new_entry['innings_pitched'] = row.innings_pitched
+    new_entry['wins'] = row.wins
+    new_entry['losses'] = row.losses
+    new_entry['saves'] = row.saves
+    new_entry['save_opportunities'] = row.save_opportunities
+    new_entry['holds'] = row.holds
+    new_entry['blown_saves'] = row.blown_saves
+    new_entry['earned_runs'] = row.earned_runs
+    new_entry['whip'] = row.whip
+    new_entry['batters_faced'] = row.batters_faced
+    new_entry['games_pitched'] = row.games_pitched
+    new_entry['complete_games'] = row.complete_games
+    new_entry['shutouts'] = row.shutouts
+    new_entry['strikes'] = row.strikes
+    new_entry['strike_percentage'] = row.strike_percentage
+    new_entry['hit_batsmen'] = row.hit_batsmen
+    new_entry['balks'] = row.balks
+    new_entry['wild_pitches'] = row.wild_pitches
+    new_entry['pickoffs'] = row.pickoffs
     new_entry['total_bases'] = row.total_bases
-    new_entry['rbi'] = row.rbi
-    new_entry['left_on_base'] = row.left_on_base
-    new_entry['sac_bunts'] = row.sac_bunts
-    new_entry['sac_flies'] = row.sac_flies
-    new_entry['babip'] = row.babip
     new_entry['ground_outs_to_airouts'] = row.ground_outs_to_airouts
-    new_entry['at_bats_per_home_run'] = row.at_bats_per_home_run
-    new_row = Bp_stats_hitting(**new_entry)
+    new_entry['win_percentage'] = row.win_percentage
+    new_entry['pitches_per_inning'] = row.pitches_per_inning
+    new_entry['games_finished'] = row.games_finished
+    new_entry['strikeout_walk_ratio'] = row.strikeout_walk_ratio
+    new_entry['strikeouts_per_9_inn'] = row.strikeouts_per_9_inn
+    new_entry['walks_per_9_inn'] = row.walks_per_9_inn
+    new_entry['hits_per_9_inn'] = row.hits_per_9_inn
+    new_entry['runs_scored_per_9'] = row.runs_scored_per_9
+    new_entry['home_runs_per_9'] = row.home_runs_per_9
+    new_entry['inherited_runners'] = row.inherited_runners
+    new_entry['inherited_runners_scored'] = row.inherited_runners_scored	
+
+    new_row = Bp_stats_pitching(**new_entry)
     session_write.add(new_row) 
 
     session_write.commit()
