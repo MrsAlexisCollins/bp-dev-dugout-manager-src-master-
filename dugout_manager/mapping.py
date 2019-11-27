@@ -517,6 +517,21 @@ class Pecota_raw_pitchers(Base):
 	def __repr__(self):
 		return "{}({!r})".format(self.__class__.__name__, self.__dict__)
 
+class Euston_contracts(Base): 
+	__tablename__ = 'contracts'
+	__table_args = {'schema': 'euston'}
+	contract_id = Column(Integer, primary_key = True)
+	bpid = Column(Integer)
+	signed_date = Column(Date)
+	terminated_date = Column(Date)
+	duration_years_max = Column(Integer)
+	duration_years_base = Column(Integer)
+	duration_years_actual = Column(Integer)
+	signing_org = Column(String)
+	first_season = Column(Integer)
+	def __repr__(self):
+		return "{}({!r})".format(self.__class__.__name__, self.__dict__)
+
 ## outbound
 
 
@@ -939,9 +954,9 @@ class Bp_pecota_pitching_raw(Base):
 	def __repr__(self):
 		return "{}({!r})".format(self.__class__.__name__, self.__dict__)
 
-class Mlb_contracts(Base): 
+class People_contracts(Base): 
 	__tablename__ = 'contracts'
-	__table_args__ = {'schema': 'euston'}
+	__table_args__ = {'schema': 'entitas'}
 	contract_id = Column(Integer, primary_key = True)
 	bpid = Column(Integer)
 	signed_date = Column(Date)
