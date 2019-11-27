@@ -955,7 +955,7 @@ class Bp_pecota_pitching_raw(Base):
 		return "{}({!r})".format(self.__class__.__name__, self.__dict__)
 
 class People_contracts(Base): 
-	__tablename__ = 'contracts'
+	__tablename__ = 'people_contracts'
 	__table_args__ = {'schema': 'entitas'}
 	contract_id = Column(Integer, primary_key = True)
 	bpid = Column(Integer)
