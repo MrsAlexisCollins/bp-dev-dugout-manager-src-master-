@@ -878,3 +878,63 @@ class Bp_team_rosters(Base):
 		return "{}({!r})".format(self.__class__.__name__, self.__dict__)
 
 
+
+class Bp_pecota_hitting_raw(Base):
+	__tablename__ = 'pecota_hitting_raw'
+	__table_args__ = {'schema': 'stats'}
+	id = Column(Integer,primary_key = True)
+	bpid   = Column(Integer, ForeignKey('entitas.people.bpid'))
+	season  = Column(Integer)
+	created_datetime = Column(DateTime)  
+	drc_plus = Column(Numeric) 
+	draa_pa = Column(Numeric) 
+	hr = Column(Numeric) 
+	hr_sd = Column(Numeric) 
+	b3 = Column(Numeric) 
+	b3_sd = Column(Numeric) 
+	b2 = Column(Numeric) 
+	b2_sd = Column(Numeric) 
+	b1 = Column(Numeric) 
+	b1_sd = Column(Numeric) 
+	roe = Column(Numeric) 
+	roe_sd = Column(Numeric) 
+	hbp = Column(Numeric) 
+	hbp_sd = Column(Numeric) 
+	bb = Column(Numeric) 
+	bb_sd = Column(Numeric) 
+	so = Column(Numeric) 
+	so_sd = Column(Numeric) 
+	gb = Column(Numeric) 
+	gb_sd = Column(Numeric) 
+	out = Column(Numeric) 
+	def __repr__(self):
+		return "{}({!r})".format(self.__class__.__name__, self.__dict__)
+
+class Bp_pecota_pitching_raw(Base):
+	__tablename__ = 'pecota_pitching_raw'
+	__table_args__ = {'schema': 'stats'}
+	id = Column(Integer,primary_key = True)
+	bpid = Column(Integer, ForeignKey('entitas.people.bpid'))
+	season = Column(Integer)
+	created_datetime = Column(DateTime)  
+	dra = Column(Numeric) 
+	dra_minus = Column(Numeric) 
+	hr = Column(Numeric) 
+	hr_sd = Column(Numeric) 
+	b3 = Column(Numeric) 
+	b3_sd = Column(Numeric) 
+	b2 = Column(Numeric) 
+	b2_sd = Column(Numeric) 
+	b1 = Column(Numeric) 
+	b1_sd = Column(Numeric) 
+	roe = Column(Numeric) 
+	roe_sd = Column(Numeric) 
+	hbp = Column(Numeric) 
+	hbp_sd = Column(Numeric) 
+	bb = Column(Numeric) 
+	bb_sd = Column(Numeric) 
+	so = Column(Numeric) 
+	so_sd = Column(Numeric) 
+	out = Column(Numeric) 
+	def __repr__(self):
+		return "{}({!r})".format(self.__class__.__name__, self.__dict__)
