@@ -454,11 +454,73 @@ class Bp_xref(Base):
 	def __repr__(self):
 		return "{}({!r})".format(self.__class__.__name__, self.__dict__)
 
+class Pecota_raw_batters(Base):
+	__tablename__ = 'batters_raw'
+	__table_args__ = {'schema': 'pecota'}
+
+	batter 	 = Column(Integer, primary_key = True)
+	proj_year  = Column(Integer, primary_key = True)
+	vintage = Column(String, primary_key = True)
+	proj_dRC_plus = Column(Numeric)
+	proj_dRAA_PA = Column(Numeric)
+	HR_proj_pneu = Column(Numeric)
+	HR_proj_pneu_sd = Column(Numeric)
+	B3_proj_pneu = Column(Numeric)
+	B3_proj_pneu_sd = Column(Numeric)
+	B2_proj_pneu = Column(Numeric)
+	B2_proj_pneu_sd = Column(Numeric)
+	B1_proj_pneu = Column(Numeric)
+	B1_proj_pneu_sd = Column(Numeric)
+	ROE_proj_pneu = Column(Numeric)
+	ROE_proj_pneu_sd = Column(Numeric)
+	HBP_proj_pneu = Column(Numeric)
+	HBP_proj_pneu_sd = Column(Numeric)
+	BB_proj_pneu = Column(Numeric)
+	BB_proj_pneu_sd = Column(Numeric)
+	SO_proj_pneu = Column(Numeric)
+	SO_proj_pneu_sd = Column(Numeric)
+	GB_proj_pneu = Column(Numeric)
+	GB_proj_pneu_sd = Column(Numeric)
+	OUT_proj_pneu = Column(Numeric)
+
+
+	def __repr__(self):
+		return "{}({!r})".format(self.__class__.__name__, self.__dict__)
+
+
+class Pecota_raw_pitchers(Base):
+	__tablename__ = 'pitchers_raw'
+	__table_args__ = {'schema': 'pecota'}
+	pitcher = Column(Integer, primary_key = True)
+	proj_year  = Column(Integer, primary_key = True)
+	vintage = Column(String, primary_key = True)
+	DRA_final= Column(Numeric)
+	SO_proj= Column(Numeric)
+	SO_proj_sd= Column(Numeric)
+	BB_proj= Column(Numeric)
+	BB_proj_sd= Column(Numeric)
+	HR_proj= Column(Numeric)
+	HR_proj_sd= Column(Numeric)
+	B3_proj= Column(Numeric)
+	B3_proj_sd= Column(Numeric)
+	B2_proj= Column(Numeric)
+	B2_proj_sd= Column(Numeric)
+	B1_proj= Column(Numeric)
+	B1_proj_sd= Column(Numeric)
+	ROE_proj= Column(Numeric)
+	ROE_proj_sd= Column(Numeric)
+	HBP_proj= Column(Numeric)
+	HBP_proj_sd= Column(Numeric)
+	OUT_proj= Column(Numeric)
+	DRA_minus= Column(Numeric)
+	cFIP= Column(Numeric)
+	def __repr__(self):
+		return "{}({!r})".format(self.__class__.__name__, self.__dict__)
 
 ## outbound
 
 
-##TODO add FK relationsihps to Bp_entitas objects!
+
  
 class Bp_stats_catching(Base):
 	__tablename__ = 'stats_catching'
