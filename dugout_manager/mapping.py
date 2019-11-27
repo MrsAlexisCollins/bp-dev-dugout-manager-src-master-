@@ -519,7 +519,7 @@ class Pecota_raw_pitchers(Base):
 
 class Euston_contracts(Base): 
 	__tablename__ = 'contracts'
-	__table_args = {'schema': 'euston'}
+	__table_args__ = {'schema': 'euston'}
 	contract_id = Column(Integer, primary_key = True)
 	bpid = Column(Integer)
 	signed_date = Column(Date)
@@ -966,5 +966,6 @@ class People_contracts(Base):
 	duration_years_actual = Column(Integer)
 	signing_org_id = Column(Integer, ForeignKey('organizations.org_id'))
 	first_season = Column(Integer)
+	updated_timestamp = Column(DateTime)
 	def __repr__(self): 
 		return "{}({!r})".format(self.__class__.__name__, self.__dict__)
