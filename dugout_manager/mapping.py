@@ -964,7 +964,7 @@ class People_contracts(Base):
 	duration_years_max = Column(Integer)
 	duration_years_base = Column(Integer)
 	duration_years_actual = Column(Integer)
-	signing_org_id = Column(Integer, ForeignKey('organizations.org_id'))
+	signing_org_id = Column(Integer, ForeignKey('entitas.organizations.org_id'))
 	first_season = Column(Integer)
 	updated_timestamp = Column(DateTime)
 	def __repr__(self): 
