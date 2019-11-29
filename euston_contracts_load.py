@@ -1,12 +1,11 @@
-
 from dugout_manager.read import session_read  
 from dugout_manager.write import session_write
-from dugout_manager.mapping import Euston_contracts, People_contracts, Bp_organizations
+from dugout_manager.mapping import Euston_contracts, People_contracts, Bp_organizations, Xref_org
 from sqlalchemy import func
 from datetime import datetime
 
 euston_contracts = session_read.query(Euston_contracts)
-bp_organizations = session_write.query(Bp_organizations)
+bp_organizations = session_write.query(Bp_organizations).join(Xref_org, Bp_organizations.org_id == Xref_org.org_id)
 
 for row in euston_contracts: 
     new_contract_entry = {}
@@ -17,7 +16,7 @@ for row in euston_contracts:
     new_contract_entry['duration_years_max'] = row.duration_years_max
     new_contract_entry['duration_years_base'] = row.duration_years_base
     new_contract_entry['duration_years_actual'] = row.duration_years_actual
-    new_contract_entry_org = bp_organizations.filter(Bp_organizations.org_name == row.signing_org).first()
+    new_contract_entry_org = bp_organizations.filter(Xref_org.xref_id == row.signing_org).first()
     if new_contract_entry_org :
         new_contract_entry['signing_org_id'] =  new_contract_entry_org.org_id
     else:

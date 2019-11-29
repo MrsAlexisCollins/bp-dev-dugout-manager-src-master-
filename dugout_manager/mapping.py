@@ -969,3 +969,13 @@ class People_contracts(Base):
 	updated_timestamp = Column(DateTime)
 	def __repr__(self): 
 		return "{}({!r})".format(self.__class__.__name__, self.__dict__)
+
+class Xref_org(Base): 
+	__tablename__ = 'org_refs'
+	__table_args__ = {'schema': 'xrefs'}
+	org_ref_id = Column(Integer, primary_key = True)
+	org_id = Column(Integer)
+	xref_type = Column(String)
+	xref_id = Column(String)
+	def __repr__(self):
+		return "{}({!r})".format(self.__class__.__name__, self.__dict__)
