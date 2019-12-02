@@ -10,6 +10,34 @@ from sqlalchemy.orm import relationship
 Base = declarative_base()
 
 ## inbound
+class Mlb_people_search(Base): # materialzed view, one row per player, don't bother with other FKs, all data is here
+	__tablename__ = 'people_search'
+	__table_args__ = {'schema': 'mlbapi'}
+	bpid = Column(Integer  , primary_key = True)  
+	active = Column(Boolean)
+	current_team_id = Column(Integer)  
+	roster_team_id = Column(Integer) 
+	birth_date = Column(Date)
+	death_date = Column(Date)
+	throws = Column(String)
+	bats = Column(String)
+	height = Column(Integer)  
+	weight = Column(Integer)
+	boxscore_name = Column(String)
+	first_name_proper = Column(String)
+	first_name = Column(String)
+	middle_name = Column(String)
+	last_name = Column(String)
+	matrilineal_name = Column(String)
+	full_name = Column(String)
+	sortable_name = Column(String)
+	birth_city = Column(String)
+	birth_state_province = Column(String)
+	birth_country = Column(String) 
+	def __repr__(self):
+		return "{}({!r})".format(self.__class__.__name__, self.__dict__)
+
+
 class Mlb_stats_catching(Base):
 	__tablename__ = 'stats_catching'
 	__table_args__ = {'schema': 'mlbapi'}
@@ -444,12 +472,12 @@ class Mlb_teams(Base):
 
 class Bp_xref(Base): 
 	__tablename__ = 'people_xrefids'
+	__table_args__ = {'schema': 'ingest'}
 
 	bpid = Column(Integer, primary_key = True)
 	mlb = Column(Integer, ForeignKey('mlbapi.people.id')) 
-	people = relationship("Mlb_people", back_populates="bpxref")
+	people = relationship("Mlb_people", back_populates="bpxref") 
 
-	__table_args__ = {'schema': 'ingest'}
 
 	def __repr__(self):
 		return "{}({!r})".format(self.__class__.__name__, self.__dict__)
@@ -979,3 +1007,33 @@ class Xref_org(Base):
 	xref_id = Column(String)
 	def __repr__(self):
 		return "{}({!r})".format(self.__class__.__name__, self.__dict__)
+
+
+class Bp_people_search(Base):  
+	__tablename__ = 'people_search'
+	__table_args__ = {'schema': 'entitas'}
+	bpid = Column(Integer  , primary_key = True)  
+	active = Column(Boolean)
+	current_team_id = Column(Integer)  
+	roster_team_id = Column(Integer)  
+	birth_date = Column(Date)
+	death_date = Column(Date)
+	throws = Column(String)
+	bats = Column(String)
+	height = Column(Integer)  
+	weight = Column(Integer)
+	boxscore_name = Column(String)
+	first_name_proper = Column(String)
+	first_name = Column(String)
+	middle_name = Column(String)
+	last_name = Column(String)
+	matrilineal_name = Column(String)
+	full_name = Column(String)
+	sortable_name = Column(String)
+	birth_city = Column(String)
+	birth_state_province = Column(String)
+	birth_country = Column(String) 
+	updated_timestamp = Column(DateTime)
+	def __repr__(self):
+		return "{}({!r})".format(self.__class__.__name__, self.__dict__)
+
