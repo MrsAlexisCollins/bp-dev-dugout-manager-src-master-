@@ -15,8 +15,9 @@ class Mlb_people_search(Base): # materialzed view, one row per player, don't bot
 	__table_args__ = {'schema': 'mlbapi'}
 	bpid = Column(Integer  , primary_key = True)  
 	active = Column(Boolean)
-	current_team_id = Column(Integer)  
-	roster_team_id = Column(Integer) 
+	on_40 = Column(Boolean)
+	team_id = Column(Integer)  
+	org_id = Column(Integer) 
 	birth_date = Column(Date)
 	death_date = Column(Date)
 	throws = Column(String)
@@ -34,6 +35,9 @@ class Mlb_people_search(Base): # materialzed view, one row per player, don't bot
 	birth_city = Column(String)
 	birth_state_province = Column(String)
 	birth_country = Column(String) 
+	status = Column(String)
+	position = Column(String)
+	jersey_number = Column(Integer)
 	def __repr__(self):
 		return "{}({!r})".format(self.__class__.__name__, self.__dict__)
 
@@ -1014,8 +1018,9 @@ class Bp_people_search(Base):
 	__table_args__ = {'schema': 'entitas'}
 	bpid = Column(Integer  , primary_key = True)  
 	active = Column(Boolean)
-	current_team_id = Column(Integer)  
-	roster_team_id = Column(Integer)  
+	on_40 = Column(Boolean)
+	team_id = Column(Integer)  
+	org_id = Column(Integer)  
 	birth_date = Column(Date)
 	death_date = Column(Date)
 	throws = Column(String)
@@ -1033,6 +1038,9 @@ class Bp_people_search(Base):
 	birth_city = Column(String)
 	birth_state_province = Column(String)
 	birth_country = Column(String) 
+	status = Column(String)
+	position = Column(String)
+	jersey_number = Column(Integer)
 	updated_timestamp = Column(DateTime)
 	def __repr__(self):
 		return "{}({!r})".format(self.__class__.__name__, self.__dict__)
