@@ -5,12 +5,14 @@ from dugout_manager.mapping import Bp_people_search, Mlb_people_search
 
 from datetime import datetime
 
-mlb_persons = session_read.query(Mlb_people_search)
-
+bp_persons = session_write.query(Bp_people_search)
+mlb_persons = session_read.query(Mlb_people_search).all()
+bp_persons.delete()   
+new_entries = []
 for row in mlb_persons:
     new_entry = {}
     new_entry['updated_timestamp'] = datetime.now()  
-    new_entry['bpid'] = row.bpid
+    new_entry['bpid'] = row.bpid #PK
     new_entry['full_name'] = row.full_name
     new_entry['active'] = row.active
     new_entry['on_40'] = row.on_40
@@ -36,8 +38,12 @@ for row in mlb_persons:
     new_entry['status'] = row.status
     new_entry['jersey_number'] = row.jersey_number
     new_entry['position'] = row.position
+    new_entries.append(new_entry)
 
+for new_entry in new_entries:
     new_row = Bp_people_search(**new_entry)
-    session_write.add(new_row) 
-    session_write.commit()
+    session_write.add(new_row)
+
+  
+session_write.commit()
 
