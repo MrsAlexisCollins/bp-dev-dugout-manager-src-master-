@@ -486,6 +486,15 @@ class Bp_xref(Base):
 	def __repr__(self):
 		return "{}({!r})".format(self.__class__.__name__, self.__dict__)
 
+class Pecota_book_list(Base):
+	__tablename__ = 'book_list'
+	__table_args__ = {'schema': 'pecota'}
+	bpid = Column(Integer, primary_key = True)
+	position = Column(String)
+	org_abbrev = Column(String)
+	def __repr__(self):
+		return "{}({!r})".format(self.__class__.__name__, self.__dict__)
+
 class Pecota_raw_batters(Base):
 	__tablename__ = 'batters_raw'
 	__table_args__ = {'schema': 'pecota'}
@@ -1045,3 +1054,12 @@ class Bp_people_search(Base):
 	def __repr__(self):
 		return "{}({!r})".format(self.__class__.__name__, self.__dict__)
 
+
+class Bp_book_list(Base):
+	__tablename__ = 'book_list'
+	__table_args__ = {'schema': 'entitas'}
+	bpid = Column(Integer, primary_key = True)
+	position = Column(String)
+	org_id = Column(Integer)
+	def __repr__(self):
+		return "{}({!r})".format(self.__class__.__name__, self.__dict__)
