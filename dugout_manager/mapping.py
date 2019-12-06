@@ -501,7 +501,7 @@ class Pecota_raw_batters(Base):
 
 	batter 	 = Column(Integer, primary_key = True)
 	proj_year  = Column(Integer, primary_key = True)
-	vintage = Column(String, primary_key = True)
+	vintage = Column(DateTime, primary_key = True)
 	proj_dRC_plus = Column(Numeric)
 	proj_dRAA_PA = Column(Numeric)
 	HR_proj_pneu = Column(Numeric)
@@ -534,7 +534,7 @@ class Pecota_raw_pitchers(Base):
 	__table_args__ = {'schema': 'pecota'}
 	pitcher = Column(Integer, primary_key = True)
 	proj_year  = Column(Integer, primary_key = True)
-	vintage = Column(String, primary_key = True)
+	vintage = Column(DateTime, primary_key = True)
 	DRA_final= Column(Numeric)
 	SO_proj= Column(Numeric)
 	SO_proj_sd= Column(Numeric)
