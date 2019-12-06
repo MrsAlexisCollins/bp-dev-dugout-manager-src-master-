@@ -18,6 +18,7 @@ for row in pecota_book_list:
     new_entry = {}
     new_entry['bpid'] =  row.playerid
     new_entry['position']  = row.position
+    new_entry['oneline']  = row.oneline
     new_entry_org = bp_organizations.filter(Xref_org.xref_id == row.team).first()
     if new_entry_org :
         new_entry['org_id'] =  new_entry_org.org_id
