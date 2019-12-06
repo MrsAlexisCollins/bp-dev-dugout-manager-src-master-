@@ -22,7 +22,7 @@ for row in mlb_persons:
     new_entry['death_date'] = row.death_date
     new_entry['throws'] = row.throws
     new_entry['bats'] = row.bats
-    new_entry['height'] = row. height
+    new_entry['height'] = row.height
     new_entry['weight'] = row.weight
     new_entry['boxscore_name'] = row.boxscore_name
     new_entry['first_name_proper'] = row.first_name_proper

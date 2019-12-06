@@ -12,6 +12,8 @@ bp_teams = session_write.query(Bp_teams)
 mlb_people_roster_status = session_read.query(Mlb_people_roster_status).join(Mlb_people,Bp_xref).all()
 
 new_status_entries = []
+# this is a light load relatively speaking, so just flush and load
+session_write.query(Bp_people_roster_status).delete()
 
 for row in mlb_people_roster_status:
     new_status_entry = {}
@@ -36,4 +38,5 @@ for row in mlb_people_roster_status:
 
     new_status_entry_row = Bp_people_roster_status(**new_status_entry)
     session_write.add(new_status_entry_row) 
-    #session_write.commit()
+
+session_write.commit()
