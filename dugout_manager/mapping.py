@@ -487,11 +487,16 @@ class Bp_xref(Base):
 		return "{}({!r})".format(self.__class__.__name__, self.__dict__)
 
 class Pecota_book_list(Base):
-	__tablename__ = 'book_list'
+	__tablename__ = 'book_list_cms'
 	__table_args__ = {'schema': 'pecota'}
-	bpid = Column(Integer, primary_key = True)
+	playerid = Column(Integer )
 	position = Column(String)
-	org_abbrev = Column(String)
+	team = Column(String)
+	listid = Column(Integer , primary_key= True)
+	lastname = Column(String)
+	firstname = Column(String)
+	fullname  = Column(String)
+	oneline	  = Column(Boolean)
 	def __repr__(self):
 		return "{}({!r})".format(self.__class__.__name__, self.__dict__)
 
