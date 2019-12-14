@@ -563,6 +563,32 @@ class Pecota_raw_pitchers(Base):
 	def __repr__(self):
 		return "{}({!r})".format(self.__class__.__name__, self.__dict__)
 
+class Pecota_raw_fielders(Base):
+	__tablename__ = 'fielders_raw'
+	__table_args__ = {'schema': 'pecota'}
+	fielder = Column(Numeric, primary_key = True)
+	pos = Column(String, primary_key = True)
+	proj_year = Column(Numeric, primary_key = True)
+	vintage = Column(DateTime, primary_key = True)
+	fraa_100_proj = Column(Numeric)
+	fraa_100_proj_sd  = Column(Numeric)
+
+	def __repr__(self):
+		return "{}({!r})".format(self.__class__.__name__, self.__dict__)
+
+class Pecota_raw_runners(Base):
+	__tablename__ = 'runners_raw'
+	__table_args__ = {'schema': 'pecota'}
+	run_id = Column(Numeric, primary_key = True)
+	proj_year = Column(Numeric, primary_key = True)
+	vintage = Column(DateTime, primary_key = True)
+	brr_50_proj = Column(Numeric)
+	brr_50_proj_sd  = Column(Numeric)
+
+	def __repr__(self):
+		return "{}({!r})".format(self.__class__.__name__, self.__dict__)
+
+
 class Euston_contracts(Base): 
 	__tablename__ = 'contracts'
 	__table_args__ = {'schema': 'euston'}
@@ -1070,3 +1096,35 @@ class Bp_book_list(Base):
 	online = Column(Boolean)
 	def __repr__(self):
 		return "{}({!r})".format(self.__class__.__name__, self.__dict__)
+
+
+
+class Bp_pecota_fielders_raw (Base):
+	__tablename__ = 'pecota_fielding_raw'
+	__table_args__ = {'schema': 'stats'}
+
+	id = Column(Integer,primary_key = True)
+	bpid = Column(Integer, ForeignKey('entitas.people.bpid'))
+	season = Column(Integer)
+	position = Column(Integer )
+	created_datetime = Column(DateTime)  
+	fraa_100 = Column(Numeric)
+	fraa_100_sd  = Column(Numeric)
+
+	def __repr__(self):
+		return "{}({!r})".format(self.__class__.__name__, self.__dict__)
+
+class Bp_pecota_runners_raw (Base):
+	__tablename__ = 'pecota_running_raw'
+	__table_args__ = {'schema': 'stats'}
+
+	id = Column(Integer,primary_key = True)
+	bpid = Column(Integer, ForeignKey('entitas.people.bpid'))
+	season = Column(Integer)
+	created_datetime = Column(DateTime)  
+	brr_50  = Column(Numeric)
+	brr_50_sd  = Column(Numeric)
+	
+	def __repr__(self):
+		return "{}({!r})".format(self.__class__.__name__, self.__dict__)
+
