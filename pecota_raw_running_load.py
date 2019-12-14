@@ -6,7 +6,7 @@ from datetime import datetime
 
 DEFAULT_PA = 500
 
-vintage_last = session_write.query(func.max(Bp_pecota_runners_raw.created_datetime)).scalar() 
+vintage_last = session_write.query(func.max(Bp_pecota_runners_raw.created_datetime)).scalar()  or datetime.strptime('01/01/01 01:01:01', '%m/%d/%y %H:%M:%S')
 vintage_last_judge = session_read.query(func.max(Pecota_raw_runners.vintage)).scalar() 
 print(vintage_last_judge ,vintage_last)
 if vintage_last_judge > vintage_last:
