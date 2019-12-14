@@ -8,7 +8,7 @@ from datetime import datetime
 vintage_last = session_write.query(func.max(Bp_pecota_hitting_raw.created_datetime)).scalar()  or datetime.strptime('01/01/01 01:01:01', '%m/%d/%y %H:%M:%S')
 vintage_last_judge = session_read.query(func.max(Pecota_raw_batters.vintage)).scalar() 
 print(vintage_last_judge ,vintage_last)
-if vintage_last_judge >= vintage_last:
+if vintage_last_judge >  vintage_last:
     pecota_raw = session_read.query(Pecota_raw_batters).filter(Pecota_raw_batters.vintage == vintage_last_judge).all()
     session_write.query(Bp_pecota_hitting_raw).delete()   
 
