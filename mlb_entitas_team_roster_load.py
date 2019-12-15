@@ -1,7 +1,8 @@
 
 from dugout_manager.read import session_read  
 from dugout_manager.write import session_write
-from dugout_manager.mapping import Bp_xref, Mlb_team_rosters,  Bp_teams, Bp_team_rosters,  Mlb_teams,Mlb_people
+from dugout_manager.cage_models import Bp_xref, Mlb_team_rosters,    Mlb_teams,Mlb_people
+from dugout_manager.dugout_models import   Bp_teams, Bp_team_rosters 
 from sqlalchemy.sql.expression import func
 
 from datetime import datetime
