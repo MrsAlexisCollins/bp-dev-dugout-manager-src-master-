@@ -537,3 +537,20 @@ class Bp_pecota_runners_raw (Base):
 	def __repr__(self):
 		return "{}({!r})".format(self.__class__.__name__, self.__dict__)
 
+
+
+class Bp_pecota_runner_binomials (Base):
+	__tablename__ = 'pecota_runner_binomials'
+	__table_args__ = {'schema': 'stats'}
+
+	id = Column(Integer,primary_key = True)
+	bpid = Column(Integer, ForeignKey('entitas.people.bpid'))
+	season = Column(Integer)
+	sba_var = Column(Numeric)
+	sba = Column(Numeric)
+	sb_var = Column(Numeric)
+	sb = Column(Numeric)
+	
+	def __repr__(self):
+		return "{}({!r})".format(self.__class__.__name__, self.__dict__)
+

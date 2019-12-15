@@ -600,3 +600,18 @@ class Euston_contracts(Base):
 	first_season = Column(Integer)
 	def __repr__(self):
 		return "{}({!r})".format(self.__class__.__name__, self.__dict__)
+
+
+class Pecota_runner_binomials(Base):
+	__tablename__ = 'runner_binomials'
+	__table_args__ = {'schema': 'pecota'}
+	year_proj = Column(Integer, primary_key = True)
+	bat_id = Column(Integer, primary_key = True)
+	sba_var = Column('$SBA_VAR',Numeric)
+	sba = Column('$SBA',Numeric)
+	sb_var = Column('$SB_VAR',Numeric)
+	sb = Column('$SB',Numeric)
+
+
+	def __repr__(self):
+		return "{}({!r})".format(self.__class__.__name__, self.__dict__)
