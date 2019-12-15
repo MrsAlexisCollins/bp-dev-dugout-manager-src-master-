@@ -1,6 +1,7 @@
 from dugout_manager.read import session_read  
 from dugout_manager.write import session_write
-from dugout_manager.mapping import *
+from dugout_manager.cage_models import *
+from dugout_manager.dugout_models import *
 from sqlalchemy import func
 from datetime import datetime
 

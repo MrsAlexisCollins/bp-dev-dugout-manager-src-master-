@@ -1,7 +1,8 @@
 
 from dugout_manager.read import session_read  
 from dugout_manager.write import session_write
-from dugout_manager.mapping import Mlb_leagues, Mlb_levels, Mlb_divisions, Mlb_teams, Bp_leagues, Bp_divisions, Bp_levels, Bp_organizations, Bp_teams, Bp_governing_bodies
+from dugout_manager.cage_models import Mlb_leagues, Mlb_levels, Mlb_divisions, Mlb_teams
+from dugout_manager.dugout_models import  Bp_leagues, Bp_divisions, Bp_levels, Bp_organizations, Bp_teams, Bp_governing_bodies
 from sqlalchemy import func, exists, or_, and_
 from datetime import datetime
 

@@ -1,7 +1,8 @@
 
 from dugout_manager.read import session_read  
 from dugout_manager.write import session_write
-from dugout_manager.mapping import Bp_people_search, Mlb_people_search
+from dugout_manager.cage_models import   Mlb_people_search
+from dugout_manager.dugout_models import Bp_people_search 
 
 from datetime import datetime
 
