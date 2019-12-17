@@ -1,5 +1,5 @@
-from dugout_manager.read import session_read  
-from dugout_manager.write import session_write
+from dugout_manager.connectors.read import session_read  
+from dugout_manager.connectors.write import session_write
 from dugout_manager.cage_models import Pecota_runner_binomials
 from dugout_manager.dugout_models import Bp_pecota_runner_binomials
 from sqlalchemy import func

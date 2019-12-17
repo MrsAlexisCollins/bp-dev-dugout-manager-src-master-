@@ -1,5 +1,5 @@
-from dugout_manager.read import session_read  
-from dugout_manager.write import session_write
+from dugout_manager.connectors.read import session_read  
+from dugout_manager.connectors.write import session_write
 from dugout_manager.cage_models import Mlb_stats_fielding,Mlb_people, Bp_xref,Mlb_teams
 from dugout_manager.dugout_models import Bp_teams, Bp_stats_fielding
 from sqlalchemy import func
