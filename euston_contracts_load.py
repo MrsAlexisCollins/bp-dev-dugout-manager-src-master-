@@ -1,5 +1,5 @@
-from dugout_manager.read import session_read  
-from dugout_manager.write import session_write
+from dugout_manager.connectors.read import session_read  
+from dugout_manager.connectors.write import session_write
 from dugout_manager.cage_models import Euston_contracts
 from dugout_manager.dugout_models import Bp_organizations, Xref_org, People_contracts
 from sqlalchemy import func

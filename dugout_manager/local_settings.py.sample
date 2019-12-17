@@ -4,11 +4,13 @@ import os
 # basecoach has R on cage, RW on dugout
 
 #write local read remote
-os.environ['dugout'] = 'postgres://user:pwd@localhost/dugout'
 os.environ['cage'] = 'postgres://user:pwd@172.104.15.153/cage'  
+os.environ['dugout'] = 'postgres://user:pwd@localhost/dugout'
+os.environ['ondeck'] = 'postgres://user:pwd@djangodbhost/djangodb'  
  
 
-BP_DUGOUT_URL = os.environ['dugout']
 BP_CAGE_URL = os.environ['cage'] 
+BP_DUGOUT_URL = os.environ['dugout']
+BP_ONDECK_URL = os.environ['ondeck'] 
 
 

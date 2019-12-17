@@ -1,6 +1,6 @@
 
-from dugout_manager.read import session_read  
-from dugout_manager.write import session_write
+from dugout_manager.connectors.read import session_read  
+from dugout_manager.connectors.write import session_write
 from dugout_manager.cage_models import   Bp_xref,  Mlb_people_roster_entries , Mlb_teams,Mlb_people
 from dugout_manager.dugout_models import  Bp_teams, Bp_people_roster_entries 
 from sqlalchemy.sql.expression import func
