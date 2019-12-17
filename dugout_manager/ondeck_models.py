@@ -9,7 +9,7 @@ Base = declarative_base()
 
 
  
-class OD_depth_charts_batters(Base):
+class Od_depth_charts_batters(Base):
 	__tablename__ = 'depth_charts_batters'
 	__table_args__ = {'schema': 'public'}
 	bpid = Column(Integer, primary_key = True)
@@ -35,7 +35,7 @@ class OD_depth_charts_batters(Base):
 
 
  
-class OD_depth_charts_pitchers(Base):
+class Od_depth_charts_pitchers(Base):
 	__tablename__ = 'depth_charts_pitchers'
 	__table_args__ = {'schema': 'public'}
 	bpid = Column(Integer, primary_key = True)
