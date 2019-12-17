@@ -24,10 +24,8 @@ for row in pitchers:
     new_entry['org_id'] = row.org_id
     new_entry['year'] = entry_season
     new_entry['gs_pct'] = 0
-    new_entry['sp_role'] = 'none'
     new_entry['ip_gs'] = 0
     new_entry['rp_ip_pct'] = 0
-    new_entry['rp_role'] = 'nr'
     new_entry['saves_pct'] = 0
     new_entry['updated_timestamp'] = datetime.now()  
     new_entry['user_id'] = 1
