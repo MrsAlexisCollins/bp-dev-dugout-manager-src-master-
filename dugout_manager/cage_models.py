@@ -555,6 +555,8 @@ class Pecota_raw_pitchers(Base):
 	SO_proj_pneu = Column(Numeric)
 	SO_proj_pneu_sd = Column(Numeric)
 	OUT_proj_pneu = Column(Numeric)
+	GB_proj_pneu = Column(Numeric)
+	GB_proj_pneu_sd = Column(Numeric)
 	DRA_minus= Column(Numeric)
 	cFIP= Column(Numeric)
 	def __repr__(self):

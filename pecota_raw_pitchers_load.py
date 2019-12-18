@@ -39,6 +39,8 @@ if vintage_last_judge >   vintage_last:
         new_entry['so_pa'] = row.SO_proj_pneu
         new_entry['so_sd'] = row.SO_proj_pneu_sd
         new_entry['out_pa'] = row.OUT_proj_pneu
+        new_entry['gb_pa'] = row.GB_proj_pneu
+        new_entry['gb_sd'] = row.GB_proj_pneu_sd
         new_entry['hits_pa'] = sum([new_entry['hr_pa'],new_entry['b3_pa'],new_entry['b2_pa'],new_entry['b1_pa']])
         new_entry['total_base_pa'] = sum([new_entry['hr_pa']*4,new_entry['b3_pa']*3,new_entry['b2_pa']*2,new_entry['b1_pa']])
         new_entry['on_base_pa'] = sum([new_entry['hits_pa'],new_entry['hbp_pa'],new_entry['bb_pa']])
