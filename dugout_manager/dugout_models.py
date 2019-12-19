@@ -429,6 +429,8 @@ class Bp_pecota_pitching_raw(Base):
 	so_pa = Column(Numeric) 
 	so_sd = Column(Numeric) 
 	out_pa = Column(Numeric) 
+	gb_pa = Column(Numeric) 
+	gb_sd = Column(Numeric) 
 	hits_pa = Column(Numeric) 
 	total_base_pa = Column(Numeric) 
 	on_base_pa  = Column(Numeric) 
