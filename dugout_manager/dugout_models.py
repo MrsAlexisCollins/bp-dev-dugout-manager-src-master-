@@ -504,7 +504,7 @@ class Bp_book_list(Base):
 	bpid = Column(Integer, primary_key = True)
 	position = Column(String)
 	org_id = Column(Integer)
-	online = Column(Boolean)
+	oneline = Column(Boolean)
 	def __repr__(self):
 		return "{}({!r})".format(self.__class__.__name__, self.__dict__)
 
