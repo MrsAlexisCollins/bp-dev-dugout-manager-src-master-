@@ -556,3 +556,50 @@ class Bp_pecota_runner_binomials (Base):
 	def __repr__(self):
 		return "{}({!r})".format(self.__class__.__name__, self.__dict__)
 
+
+
+class Bp_pecota_depthcharts_batters(Base):
+	__tablename__ = 'depth_chart_batters'
+	__table_args__ = {'schema':'entitas'}
+
+	id = Column(Integer,primary_key = True)
+	bpid = Column(Integer, ForeignKey('entitas.people.bpid'))
+	org_id = Column(Integer, ForeignKey('entitas.organizations.org_id'))
+	season = Column(Integer)
+	pt_c = Column(Integer)
+	pt_1b = Column(Integer)
+	pt_2b = Column(Integer)
+	pt_3b = Column(Integer)
+	pt_ss = Column(Integer)
+	pt_lf = Column(Integer)
+	pt_cf = Column(Integer)
+	pt_rf = Column(Integer)
+	pt_dh = Column(Integer)
+	pt_ph = Column(Integer)
+
+	
+	def __repr__(self):
+		return "{}({!r})".format(self.__class__.__name__, self.__dict__)
+
+
+
+
+
+class Bp_pecota_depthcharts_pitchers(Base):
+	__tablename__ = 'depth_chart_pitchers'
+	__table_args__ = {'schema':'entitas'}
+
+	id = Column(Integer,primary_key = True)
+	bpid = Column(Integer, ForeignKey('entitas.people.bpid'))
+	org_id = Column(Integer, ForeignKey('entitas.organizations.org_id'))
+	season = Column(Integer)
+	gs_pct = Column(Numeric)
+	sp_role  = Column(String)
+	ip_gs = Column(Numeric)
+	rp_ip_pct = Column(Numeric)
+	rp_role  = Column(String)
+	saves_pct = Column(Numeric)
+	
+
+	def __repr__(self):
+		return "{}({!r})".format(self.__class__.__name__, self.__dict__)
