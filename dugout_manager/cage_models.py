@@ -627,6 +627,9 @@ class Pecota_runner_binomials(Base):
 class Pectoa_ref_bat_events_by_lineup(Base):
 	__tablename__ = 'bat_events_by_lineup'
 	__table_args__ = {'schema': 'pecota'}
+	year_id = Column(Integer, primary_key = True)
+	lg = Column(String, primary_key = True)
+	bat_lineup_id = Column(Integer, primary_key = True)
 
 
 	def __repr__(self):
@@ -637,7 +640,10 @@ class Pectoa_ref_bat_events_by_lineup(Base):
 class Pectoa_ref_dyna_lg_pos_batting_stats(Base):
 	__tablename__ = 'dyna_lg_pos_batting_stats'
 	__table_args__ = {'schema': 'pecota'}
-
+	year = Column(Integer, primary_key = True)
+	lvl = Column(String, primary_key = True)
+	lg = Column(String, primary_key = True)
+	pos = Column(Numeric, primary_key = True)
 	
 	def __repr__(self):
 		return "{}({!r})".format(self.__class__.__name__, self.__dict__)
@@ -647,6 +653,9 @@ class Pectoa_ref_dyna_lg_pos_batting_stats(Base):
 class Pectoa_ref_pitcher_league_pos(Base):
 	__tablename__ = 'pitcher_league_pos'
 	__table_args__ = {'schema': 'pecota'}
+	year = Column(Integer, primary_key = True)
+	pit_start_fl = Column(String, primary_key=True)
+	lg = Column(String, primary_key = True)
 
 	
 	def __repr__(self):

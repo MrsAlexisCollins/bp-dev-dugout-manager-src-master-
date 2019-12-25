@@ -612,6 +612,7 @@ class Bp_pecota_depthcharts_pitchers(Base):
 class Ref_batter_events_league_lineup(Base):
 	__tablename__ = 'ref_bat_events_by_lineup'
 	__table_args__ = {'schema': 'stats'}
+	id = Column(Integer,primary_key = True)
 
 
 	def __repr__(self):
@@ -622,6 +623,7 @@ class Ref_batter_events_league_lineup(Base):
 class Ref_batting_stats_league_position(Base):
 	__tablename__ = 'ref_dyna_lg_pos_batting_stats'
 	__table_args__ = {'schema': 'stats'}
+	id = Column(Integer,primary_key = True)
 
 	
 	def __repr__(self):
@@ -632,6 +634,7 @@ class Ref_batting_stats_league_position(Base):
 class Ref_pitching_stats_league_position(Base):
 	__tablename__ = 'ref_pitcher_league_pos'
 	__table_args__ = {'schema': 'stats'}
+	id = Column(Integer,primary_key = True)
 
 	
 	def __repr__(self):
