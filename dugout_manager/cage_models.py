@@ -617,3 +617,37 @@ class Pecota_runner_binomials(Base):
 
 	def __repr__(self):
 		return "{}({!r})".format(self.__class__.__name__, self.__dict__)
+
+
+
+
+
+### Reference Tables
+
+class Pectoa_ref_bat_events_by_lineup(Base):
+	__tablename__ = 'bat_events_by_lineup'
+	__table_args__ = {'schema': 'pecota'}
+
+
+	def __repr__(self):
+		return "{}({!r})".format(self.__class__.__name__, self.__dict__)
+
+		
+
+class Pectoa_ref_dyna_lg_pos_batting_stats(Base):
+	__tablename__ = 'dyna_lg_pos_batting_stats'
+	__table_args__ = {'schema': 'pecota'}
+
+	
+	def __repr__(self):
+		return "{}({!r})".format(self.__class__.__name__, self.__dict__)
+
+		
+
+class Pectoa_ref_pitcher_league_pos(Base):
+	__tablename__ = 'pitcher_league_pos'
+	__table_args__ = {'schema': 'pecota'}
+
+	
+	def __repr__(self):
+		return "{}({!r})".format(self.__class__.__name__, self.__dict__)

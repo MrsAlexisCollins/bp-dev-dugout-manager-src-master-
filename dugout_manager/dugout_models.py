@@ -603,3 +603,36 @@ class Bp_pecota_depthcharts_pitchers(Base):
 
 	def __repr__(self):
 		return "{}({!r})".format(self.__class__.__name__, self.__dict__)
+
+
+### Reference Tables
+
+
+
+class Ref_batter_events_league_lineup(Base):
+	__tablename__ = 'ref_bat_events_by_lineup'
+	__table_args__ = {'schema': 'stats'}
+
+
+	def __repr__(self):
+		return "{}({!r})".format(self.__class__.__name__, self.__dict__)
+
+		
+
+class Ref_batting_stats_league_position(Base):
+	__tablename__ = 'ref_dyna_lg_pos_batting_stats'
+	__table_args__ = {'schema': 'stats'}
+
+	
+	def __repr__(self):
+		return "{}({!r})".format(self.__class__.__name__, self.__dict__)
+
+		
+
+class Ref_pitching_stats_league_position(Base):
+	__tablename__ = 'ref_pitcher_league_pos'
+	__table_args__ = {'schema': 'stats'}
+
+	
+	def __repr__(self):
+		return "{}({!r})".format(self.__class__.__name__, self.__dict__)
