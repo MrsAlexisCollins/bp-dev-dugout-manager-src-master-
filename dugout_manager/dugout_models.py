@@ -798,7 +798,7 @@ class Ref_pitching_stats_league_position(Base):
 	id = Column(Integer,primary_key = True)
 	season  = Column(Integer) 
 	starters  = Column(Boolean) 
-	lg  = Column(String) 
+	league_id  = Column(Integer) 
 	ip_start  = Column(Numeric) 
 	ip_relief  = Column(Numeric) 
 	outs  = Column(Numeric) 

@@ -683,6 +683,7 @@ class Pectoa_ref_dyna_lg_pos_batting_stats(Base):
 	year = Column(Integer, primary_key = True)
 	lvl = Column(String, primary_key = True)
 	lg = Column(String, primary_key = True)
+	pos = Column(String, primary_key = True)
 	g  = Column(Numeric) 
 	pa  = Column(Numeric) 
 	ab  = Column(Numeric) 
