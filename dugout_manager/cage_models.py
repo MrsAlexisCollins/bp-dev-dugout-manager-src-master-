@@ -910,7 +910,7 @@ class Pecota_ref_pitcher_league_pos(Base):
 
 
 class Judge_pecota_bpf(Base):
-	__tablename__ = 'pecota_BPF'
+	__tablename__ = 'pecota_bpf'
 	__table_args__ = {'schema': 'pecota'}
 	year = Column(Numeric, primary_key = True)
 	bat_team = Column(String, primary_key = True)

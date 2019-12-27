@@ -900,8 +900,8 @@ class Ref_pitching_stats_league_position(Base):
 
 
 class Pecota_bpf(Base):
-	__tablename__ = 'pecota_BPF'
-	__table_args__ = {'schema': 'pecota'}
+	__tablename__ = 'pecota_bpf'
+	__table_args__ = {'schema': 'stats'}
 	id = Column(Integer,primary_key = True)
 	season = Column(Integer)
 	org_id = Column(Integer)

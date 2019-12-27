@@ -16,7 +16,8 @@ pecota_bpf.delete()
 
 new_entries = []
 for row in judge_bpf:
-    new_entry_org = bp_organizations.filter(Xref_org.xref_id == row.team).first()
+    new_entry = {}
+    new_entry_org = bp_organizations.filter(Xref_org.xref_id == row.bat_team).first()
     if new_entry_org :
         new_entry['org_id'] =  new_entry_org.org_id
     else:
