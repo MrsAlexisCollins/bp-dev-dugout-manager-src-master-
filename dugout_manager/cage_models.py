@@ -624,7 +624,7 @@ class Pecota_runner_binomials(Base):
 
 ### Reference Tables
 
-class Pectoa_ref_bat_events_by_lineup(Base):
+class Pecota_ref_bat_events_by_lineup(Base):
 	__tablename__ = 'bat_events_by_lineup'
 	__table_args__ = {'schema': 'pecota'}
 	year_id = Column(Integer, primary_key = True)
@@ -677,7 +677,7 @@ class Pectoa_ref_bat_events_by_lineup(Base):
 
 		
 
-class Pectoa_ref_dyna_lg_pos_batting_stats(Base):
+class Pecota_ref_dyna_lg_pos_batting_stats(Base):
 	__tablename__ = 'dyna_lg_pos_batting_stats'
 	__table_args__ = {'schema': 'pecota'}
 	year = Column(Integer, primary_key = True)
@@ -803,7 +803,7 @@ class Pectoa_ref_dyna_lg_pos_batting_stats(Base):
 
 		
 
-class Pectoa_ref_pitcher_league_pos(Base):
+class Pecota_ref_pitcher_league_pos(Base):
 	__tablename__ = 'pitcher_league_pos'
 	__table_args__ = {'schema': 'pecota'}
 	year = Column(Integer, primary_key = True)
@@ -906,3 +906,33 @@ class Pectoa_ref_pitcher_league_pos(Base):
 	
 	def __repr__(self):
 		return "{}({!r})".format(self.__class__.__name__, self.__dict__)
+
+
+
+class Judge_pecota_bpf(Base):
+	__tablename__ = 'pecota_BPF'
+	__table_args__ = {'schema': 'pecota'}
+	year = Column(Numeric, primary_key = True)
+	bat_team = Column(String, primary_key = True)
+	bats = Column(String, primary_key = True)
+	hr_bpf = Column(Numeric) 
+	hr_bpf_sd = Column(Numeric) 
+	b3_bpf = Column(Numeric) 
+	b3_bpf_sd = Column(Numeric) 
+	b2_bpf = Column(Numeric) 
+	b2_bpf_sd = Column(Numeric) 
+	b1_bpf = Column(Numeric) 
+	b1_bpf_sd = Column(Numeric) 
+	roe_bpf = Column(Numeric) 
+	roe_bpf_sd = Column(Numeric) 
+	hbp_bpf = Column(Numeric) 
+	hbp_bpf_sd = Column(Numeric) 
+	bb_bpf = Column(Numeric) 
+	bb_bpf_sd = Column(Numeric) 
+	so_bpf = Column(Numeric) 
+	so_bpf_sd = Column(Numeric) 
+	
+	def __repr__(self):
+		return "{}({!r})".format(self.__class__.__name__, self.__dict__)
+
+
