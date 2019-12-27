@@ -22,6 +22,7 @@ for row in judge_bpf:
     else:
         continue
     new_entry['season'] = row.year
+    new_entry['bats'] = row.bats
     new_entry['hr_bpf'] = row.hr_bpf
     new_entry['hr_bpf_sd'] = row.hr_bpf_sd
     new_entry['b3_bpf'] = row.b3_bpf
