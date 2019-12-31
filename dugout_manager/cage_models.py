@@ -936,3 +936,37 @@ class Judge_pecota_bpf(Base):
 		return "{}({!r})".format(self.__class__.__name__, self.__dict__)
 
 
+
+
+class Pecota_park_adjusted_batters(Base):
+	__tablename__ = 'batters_raw_padj'
+	__table_args__ = {'schema': 'pecota'}
+
+	batter 	 = Column(Integer, primary_key = True)
+	proj_year  = Column(Integer, primary_key = True)
+	vintage = Column(DateTime, primary_key = True)
+	proj_dRC_plus = Column(Numeric)
+	proj_dRAA_PA = Column(Numeric)
+	HR_proj = Column(Numeric)
+	HR_proj_sd = Column(Numeric)
+	B3_proj = Column(Numeric)
+	B3_proj_sd = Column(Numeric)
+	B2_proj = Column(Numeric)
+	B2_proj_sd = Column(Numeric)
+	B1_proj = Column(Numeric)
+	B1_proj_sd = Column(Numeric)
+	ROE_proj = Column(Numeric)
+	ROE_proj_sd = Column(Numeric)
+	HBP_proj = Column(Numeric)
+	HBP_proj_sd = Column(Numeric)
+	BB_proj = Column(Numeric)
+	BB_proj_sd = Column(Numeric)
+	SO_proj = Column(Numeric)
+	SO_proj_sd = Column(Numeric)
+	GB_proj = Column(Numeric)
+	GB_proj_sd = Column(Numeric)
+	OUT_proj = Column(Numeric)
+
+
+	def __repr__(self):
+		return "{}({!r})".format(self.__class__.__name__, self.__dict__)
