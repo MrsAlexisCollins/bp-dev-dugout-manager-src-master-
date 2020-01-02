@@ -21,7 +21,7 @@ if vintage_last_judge >   vintage_last:
         new_entry['created_datetime'] =  row.vintage
         new_entry['dra'] = row.proj_DRA
         new_entry['dra_minus'] = row.proj_DRA_minus
-        #new_entry['cfip'] = row.cFIP  
+        new_entry['cfip'] = row.proj_cfip  
         new_entry['hr_pa'] = row.HR_proj_padj
         new_entry['hr_sd'] = row.HR_proj_padj_sd
         new_entry['b3_pa'] = row.B3_proj_padj
@@ -39,8 +39,8 @@ if vintage_last_judge >   vintage_last:
         new_entry['so_pa'] = row.SO_proj_padj
         new_entry['so_sd'] = row.SO_proj_padj_sd
         new_entry['out_pa'] = row.OUT_proj_padj
-        new_entry['gb_pa'] = row.GB_proj_pneu
-        new_entry['gb_sd'] = row.GB_proj_pneu_sd
+        new_entry['gb_pa'] = row.GB_proj_padj
+        new_entry['gb_sd'] = row.GB_proj_padj_sd
         new_entry['hits_pa'] = sum([new_entry['hr_pa'],new_entry['b3_pa'],new_entry['b2_pa'],new_entry['b1_pa']])
         new_entry['total_base_pa'] = sum([new_entry['hr_pa']*4,new_entry['b3_pa']*3,new_entry['b2_pa']*2,new_entry['b1_pa']])
         new_entry['on_base_pa'] = sum([new_entry['hits_pa'],new_entry['hbp_pa'],new_entry['bb_pa']])

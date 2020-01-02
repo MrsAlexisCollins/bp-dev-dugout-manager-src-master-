@@ -599,7 +599,7 @@ class Pecota_raw_pitchers(Base):
 	GB_proj_pneu = Column(Numeric)
 	GB_proj_pneu_sd = Column(Numeric)
 	proj_DRA_minus= Column(Numeric)
-	# cFIP= Column(Numeric)
+	proj_cfip = Column(Numeric)
 	def __repr__(self):
 		return "{}({!r})".format(self.__class__.__name__, self.__dict__)
 
@@ -630,10 +630,10 @@ class Pecota_padj_pitchers(Base):
 	SO_proj_padj = Column(Numeric)
 	SO_proj_padj_sd = Column(Numeric)
 	OUT_proj_padj = Column(Numeric)
-	GB_proj_pneu = Column(Numeric)
-	GB_proj_pneu_sd = Column(Numeric)
+	GB_proj_padj = Column(Numeric)
+	GB_proj_padj_sd = Column(Numeric)
 	proj_DRA_minus= Column(Numeric)
-	# cFIP= Column(Numeric)
+	proj_cfip = Column(Numeric)
 	def __repr__(self):
 		return "{}({!r})".format(self.__class__.__name__, self.__dict__)
 
