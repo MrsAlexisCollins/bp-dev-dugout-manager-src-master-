@@ -19,9 +19,9 @@ if vintage_last_judge >   vintage_last:
         new_entry['bpid'] =  int(row.pitcher)
         new_entry['season']  = int(row.proj_year)
         new_entry['created_datetime'] =  row.vintage
-        new_entry['dra'] = row.DRA_final
-        new_entry['dra_minus'] = row.DRA_minus
-        new_entry['cfip'] = row.cFIP  
+        new_entry['dra'] = row.proj_DRA
+        new_entry['dra_minus'] = row.proj_DRA_minus
+        new_entry['cfip'] = row.proj_cfip  
         new_entry['hr_pa'] = row.HR_proj_pneu
         new_entry['hr_sd'] = row.HR_proj_pneu_sd
         new_entry['b3_pa'] = row.B3_proj_pneu
