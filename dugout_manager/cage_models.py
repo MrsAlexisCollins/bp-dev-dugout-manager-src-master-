@@ -716,6 +716,50 @@ class Pecota_fraa_cda(Base):
 		return "{}({!r})".format(self.__class__.__name__, self.__dict__)
 
 
+class Pecota_fielder_binomials(Base):
+	__tablename__ = 'pecota_fielder_binomials'
+	__table_args__ = {'schema': 'pecota'}
+
+	year_proj = Column(Integer, primary_key = True)
+	fld_id = Column(Integer, primary_key = True)
+	years = Column(Integer)
+	pos = Column(Integer, primary_key = True)
+	ch = Column(Numeric) 
+	ch_weighted = Column(Numeric) 
+	pm_rt_var = Column(Numeric) 
+	pm_rt = Column(Numeric) 
+	pm_rt_lg = Column(Numeric) 
+	pm_rt_raw = Column(Numeric) 
+	
+	def __repr__(self):
+		return "{}({!r})".format(self.__class__.__name__, self.__dict__)
+
+class Pecota_of_assists(Base):
+	__tablename__ = 'pecota_of_assists'
+	__table_args__ = {'schema': 'pecota'}
+	year_proj = Column(Integer, primary_key = True)
+	fld_id = Column(Integer, primary_key = True)
+	years = Column(Integer)
+	pos = Column(Integer, primary_key = True)
+	z = Column(Numeric) 
+	z_reg = Column(Numeric) 
+	ast_rt_mlb = Column(Numeric) 
+	ast150 = Column(Numeric) 
+	mlb_ast_rt = Column(Numeric) 
+	mlb_sd_rt = Column(Numeric) 
+	runs_per_ast = Column(Numeric) 
+	runs_per_g = Column(Numeric) 
+	of_ass = Column(Numeric) 
+	g_of = Column(Numeric) 
+	ast_rt = Column(Numeric) 
+	ast_rt_lg = Column(Numeric) 
+	ast_sd_lg = Column(Numeric) 
+	g_of_adj = Column(Numeric) 
+	g_of_lg_adj = Column(Numeric) 
+	
+	def __repr__(self):
+		return "{}({!r})".format(self.__class__.__name__, self.__dict__)
+
 
 ### Reference Tables
 
