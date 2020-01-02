@@ -7,10 +7,10 @@ from datetime import datetime
 
 
 vintage_last = session_write.query(func.max(Bp_pecota_hitting_park_adj.created_datetime)).scalar()  or datetime.strptime('01/01/01 01:01:01', '%m/%d/%y %H:%M:%S')
-vintage_last_judge = session_read.query(func.max(Pecota_park_adjusted_batters.vintage)).scalar() 
+vintage_last_judge = session_read.query(func.max(Pecota_padj_batters.vintage)).scalar() 
 print(vintage_last_judge ,vintage_last)
 if vintage_last_judge >  vintage_last:
-    pecota_raw = session_read.query(Pecota_park_adjusted_batters).filter(Pecota_park_adjusted_batters.vintage == vintage_last_judge).all()
+    pecota_raw = session_read.query(Pecota_padj_batters).filter(Pecota_padj_batters.vintage == vintage_last_judge).all()
     session_write.query(Bp_pecota_hitting_park_adj).delete()   
 
     for row in pecota_raw:
