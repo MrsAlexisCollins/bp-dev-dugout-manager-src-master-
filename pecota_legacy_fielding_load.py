@@ -9,11 +9,44 @@ pecota_raw = session_read.query(Pecota_fielder_binomials).all()
 session_write.query(Bp_pecota_fielder_binomials).delete()  
 
 for row in pecota_raw:
-    new_entry = {}
-    new_entry['bpid'] =  int(row.fld_id)
-    new_entry['season']  = int(row.year_proj)
+	new_entry = {}
+	new_entry['bpid'] =  int(row.fld_id)
+	new_entry['season']  = int(row.year_proj)
+	new_entry['years'] = row.years
+	new_entry['position'] = row.pos
+	new_entry['ch'] = row.ch
+	new_entry['ch_weighted'] =row.ch_weighted
+	new_entry['pm_rt_var'] = row.pm_rt_var
+	new_entry['pm_rt'] = row.pm_rt
+	new_entry['pm_rt_lg'] = row.pm_rt_lg
+	new_entry['pm_rt_raw'] = row.pm_rt_raw
 
-    new_row = Bp_pecota_fielder_binomials(**new_entry)
-    session_write.add(new_row) 
+	new_row = Bp_pecota_fielder_binomials(**new_entry)
+	session_write.add(new_row) 
 
-#session_write.commit()
+session_write.commit()
+
+
+
+
+pecota_raw = session_read.query(Pecota_of_assists).all()
+session_write.query(Bp_pecota_of_assists).delete()  
+
+for row in pecota_raw:
+	new_entry = {}
+	new_entry['bpid'] =  int(row.fld_id)
+	new_entry['season'] = int(row.year_proj)
+	new_entry['years'] = row.years
+	new_entry['position'] = row.pos
+	new_entry['ch'] = row.ch
+	new_entry['ch_weighted'] =row.ch_weighted
+	new_entry['pm_rt_var'] = row.pm_rt_var
+	new_entry['pm_rt'] = row.pm_rt
+	new_entry['pm_rt_lg'] = row.pm_rt_lg
+	new_entry['pm_rt_raw'] = row.pm_rt_raw
+
+	new_row = Bp_pecota_of_assists(**new_entry)
+	session_write.add(new_row) 
+
+session_write.commit()
+
