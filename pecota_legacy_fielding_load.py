@@ -38,12 +38,21 @@ for row in pecota_raw:
 	new_entry['season'] = int(row.year_proj)
 	new_entry['years'] = row.years
 	new_entry['position'] = row.pos
-	new_entry['ch'] = row.ch
-	new_entry['ch_weighted'] =row.ch_weighted
-	new_entry['pm_rt_var'] = row.pm_rt_var
-	new_entry['pm_rt'] = row.pm_rt
-	new_entry['pm_rt_lg'] = row.pm_rt_lg
-	new_entry['pm_rt_raw'] = row.pm_rt_raw
+	new_entry['z'] = row.z
+	new_entry['z_reg'] =row.z_reg
+	new_entry['ast_rt_mlb'] = row.ast_rt_mlb
+	new_entry['ast150'] = row.ast150
+	new_entry['mlb_ast_rt'] = row.mlb_ast_rt
+	new_entry['mlb_sd_rt'] = row.mlb_sd_rt
+	new_entry['runs_per_ast'] = row.runs_per_ast
+	new_entry['runs_per_g'] = row.runs_per_g
+	new_entry['of_ass'] = row.of_ass
+	new_entry['g_of'] = row.g_of
+	new_entry['ast_rt'] = row.ast_rt
+	new_entry['ast_rt_lg'] = row.ast_rt_lg
+	new_entry['ast_sd_lg'] = row.ast_sd_lg
+	new_entry['g_of_adj'] = row.g_of_adj
+	new_entry['g_of_lg_adj'] = row.g_of_lg_adj
 
 	new_row = Bp_pecota_of_assists(**new_entry)
 	session_write.add(new_row) 
