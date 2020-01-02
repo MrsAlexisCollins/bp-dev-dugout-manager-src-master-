@@ -681,6 +681,71 @@ class Bp_pecota_depthcharts_pitchers(Base):
 		return "{}({!r})".format(self.__class__.__name__, self.__dict__)
 
 
+
+class Bp_pecota_fraa_cda(Base):
+	__tablename__ = 'pecota_catcher_fraa'
+	__table_args__ = {'schema': 'stats'}
+	season = Column(Integer, primary_key = True)
+	bpid = Column(Integer, primary_key = True)
+	csaa_proj = Column(Numeric) 
+	csaa_proj_sd = Column(Numeric) 
+	epaa_proj = Column(Numeric) 
+	epaa_proj_sd = Column(Numeric) 
+	sraa_proj = Column(Numeric) 
+	sraa_proj_sd = Column(Numeric) 
+	traa_proj = Column(Numeric) 
+	traa_proj_sd = Column(Numeric) 
+	created_datetime = Column(DateTime) 
+	
+	def __repr__(self):
+		return "{}({!r})".format(self.__class__.__name__, self.__dict__)
+
+
+class Bp_pecota_fielder_binomials(Base):
+	__tablename__ = 'pecota_fielder_binomials'
+	__table_args__ = {'schema': 'stats'}
+
+	season = Column(Integer, primary_key = True)
+	bpid = Column(Integer, primary_key = True)
+	years = Column(Integer)
+	position = Column(Integer, primary_key = True)
+	ch = Column(Numeric) 
+	ch_weighted = Column(Numeric) 
+	pm_rt_var = Column(Numeric) 
+	pm_rt = Column(Numeric) 
+	pm_rt_lg = Column(Numeric) 
+	pm_rt_raw = Column(Numeric) 
+	
+	def __repr__(self):
+		return "{}({!r})".format(self.__class__.__name__, self.__dict__)
+
+class Bp_pecota_of_assists(Base):
+	__tablename__ = 'pecota_of_assists'
+	__table_args__ = {'schema': 'stats'}
+	season = Column(Integer, primary_key = True)
+	bpid = Column(Integer, primary_key = True)
+	years = Column(Integer)
+	position = Column(Integer, primary_key = True)
+	z = Column(Numeric) 
+	z_reg = Column(Numeric) 
+	ast_rt_mlb = Column(Numeric) 
+	ast150 = Column(Numeric) 
+	mlb_ast_rt = Column(Numeric) 
+	mlb_sd_rt = Column(Numeric) 
+	runs_per_ast = Column(Numeric) 
+	runs_per_g = Column(Numeric) 
+	of_ass = Column(Numeric) 
+	g_of = Column(Numeric) 
+	ast_rt = Column(Numeric) 
+	ast_rt_lg = Column(Numeric) 
+	ast_sd_lg = Column(Numeric) 
+	g_of_adj = Column(Numeric) 
+	g_of_lg_adj = Column(Numeric) 
+	
+	def __repr__(self):
+		return "{}({!r})".format(self.__class__.__name__, self.__dict__)
+
+
 ### Reference Tables
 
 
@@ -998,26 +1063,6 @@ class Pecota_bpf(Base):
 	bb_bpf_sd = Column(Numeric) 
 	so_bpf = Column(Numeric) 
 	so_bpf_sd = Column(Numeric) 
-	
-	def __repr__(self):
-		return "{}({!r})".format(self.__class__.__name__, self.__dict__)
-
-
-
-class Bp_pecota_fraa_cda(Base):
-	__tablename__ = 'pecota_catcher_fraa'
-	__table_args__ = {'schema': 'stats'}
-	season = Column(Integer, primary_key = True)
-	bpid = Column(Integer, primary_key = True)
-	csaa_proj = Column(Numeric) 
-	csaa_proj_sd = Column(Numeric) 
-	epaa_proj = Column(Numeric) 
-	epaa_proj_sd = Column(Numeric) 
-	sraa_proj = Column(Numeric) 
-	sraa_proj_sd = Column(Numeric) 
-	traa_proj = Column(Numeric) 
-	traa_proj_sd = Column(Numeric) 
-	created_datetime = Column(DateTime) 
 	
 	def __repr__(self):
 		return "{}({!r})".format(self.__class__.__name__, self.__dict__)
