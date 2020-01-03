@@ -697,19 +697,16 @@ class Pecota_runner_binomials(Base):
 
 
 class Pecota_fraa_cda(Base):
-	__tablename__ = 'pecota_catcher_fraa_stats'
+	__tablename__ = 'pecota_catcher_fraa_deciles'
 	__table_args__ = {'schema': 'jjudge'}
 	proj_year = Column(Integer, primary_key = True)
 	playerid = Column(Integer, primary_key = True)
+	decile = Column(Integer, primary_key = True)
 	lvl = Column(String)
 	csaa_proj = Column(Numeric) 
-	csaa_proj_sd = Column(Numeric) 
 	epaa_proj = Column(Numeric) 
-	epaa_proj_sd = Column(Numeric) 
 	sraa_proj = Column(Numeric) 
-	sraa_proj_sd = Column(Numeric) 
 	traa_proj = Column(Numeric) 
-	traa_proj_sd = Column(Numeric) 
 	vintage = Column(DateTime) 
 	
 	def __repr__(self):
