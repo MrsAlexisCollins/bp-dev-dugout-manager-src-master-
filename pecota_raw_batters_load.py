@@ -10,7 +10,7 @@ vintage_last = session_write.query(func.max(Bp_pecota_hitting_raw.created_dateti
 vintage_last_judge = session_read.query(func.max(Pecota_raw_batters.vintage)).scalar() 
 print(vintage_last_judge ,vintage_last)
 if vintage_last_judge >  vintage_last:
-    pecota_raw = session_read.query(Pecota_raw_batters).filter(Pecota_raw_batters.vintage == vintage_last_judge).all()
+    pecota_raw = session_read.query(Pecota_raw_batters).filter(Pecota_raw_batters.vintage == vintage_last_judge, Pecota_raw_batters.decile==5).all()
     session_write.query(Bp_pecota_hitting_raw).delete()   
 
     for row in pecota_raw:
@@ -18,26 +18,17 @@ if vintage_last_judge >  vintage_last:
         new_entry['bpid'] =  int(row.batter)
         new_entry['season']  = int(row.proj_year)
         new_entry['created_datetime'] =  row.vintage 
-        new_entry['drc_plus'] = row.proj_dRC_plus
-        new_entry['draa_pa'] = row.proj_dRAA_PA
+        new_entry['drc_plus'] = row.DRC
+        new_entry['draa_pa'] = row.dRAA_PA
         new_entry['hr_pa'] = row.HR_proj_pneu
-        new_entry['hr_sd'] = row.HR_proj_pneu_sd
         new_entry['b3_pa'] = row.B3_proj_pneu
-        new_entry['b3_sd'] = row.B3_proj_pneu_sd
         new_entry['b2_pa'] = row.B2_proj_pneu
-        new_entry['b2_sd'] = row.B2_proj_pneu_sd
         new_entry['b1_pa'] = row.B1_proj_pneu
-        new_entry['b1_sd'] = row.B1_proj_pneu_sd
         new_entry['roe_pa'] = row.ROE_proj_pneu
-        new_entry['roe_sd'] = row.ROE_proj_pneu_sd
         new_entry['hbp_pa'] = row.HBP_proj_pneu
-        new_entry['hbp_sd'] = row.HBP_proj_pneu_sd
         new_entry['bb_pa'] = row.BB_proj_pneu
-        new_entry['bb_sd'] = row.BB_proj_pneu_sd
         new_entry['so_pa'] = row.SO_proj_pneu
-        new_entry['so_sd'] = row.SO_proj_pneu_sd
         new_entry['gb_pa'] = row.GB_proj_pneu
-        new_entry['gb_sd'] = row.GB_proj_pneu_sd
         new_entry['out_pa'] = row.OUT_proj_pneu
         new_entry['hits_pa'] = sum([new_entry['hr_pa'],new_entry['b3_pa'],new_entry['b2_pa'],new_entry['b1_pa']])
         new_entry['total_base_pa'] = sum([new_entry['hr_pa']*4,new_entry['b3_pa']*3,new_entry['b2_pa']*2,new_entry['b1_pa']])
