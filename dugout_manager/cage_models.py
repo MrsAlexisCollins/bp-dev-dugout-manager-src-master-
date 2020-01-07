@@ -498,34 +498,24 @@ class Pecota_book_list(Base):
 		return "{}({!r})".format(self.__class__.__name__, self.__dict__)
 
 class Pecota_raw_batters(Base):
-	__tablename__ = 'pecota_bat_park_neutral'
+	__tablename__ = 'pecota_bat_park_neutral_deciles'
 	__table_args__ = {'schema': 'jjudge'}
 
 	batter 	 = Column(Integer, primary_key = True)
 	proj_year  = Column(Integer, primary_key = True)
 	vintage = Column(DateTime, primary_key = True)
-	proj_dRC_plus = Column(Numeric)
-	proj_dRC_SD = Column(Numeric)
-	proj_dRAA_PA = Column(Numeric)
-	proj_dRAA_PA_SD = Column(Numeric)
+	decile  = Column(Integer, primary_key = True)
+	DRC = Column(Numeric)
+	dRAA_PA = Column(Numeric)
 	HR_proj_pneu = Column(Numeric)
-	HR_proj_pneu_sd = Column(Numeric)
 	B3_proj_pneu = Column(Numeric)
-	B3_proj_pneu_sd = Column(Numeric)
 	B2_proj_pneu = Column(Numeric)
-	B2_proj_pneu_sd = Column(Numeric)
 	B1_proj_pneu = Column(Numeric)
-	B1_proj_pneu_sd = Column(Numeric)
 	ROE_proj_pneu = Column(Numeric)
-	ROE_proj_pneu_sd = Column(Numeric)
 	HBP_proj_pneu = Column(Numeric)
-	HBP_proj_pneu_sd = Column(Numeric)
 	BB_proj_pneu = Column(Numeric)
-	BB_proj_pneu_sd = Column(Numeric)
 	SO_proj_pneu = Column(Numeric)
-	SO_proj_pneu_sd = Column(Numeric)
 	GB_proj_pneu = Column(Numeric)
-	GB_proj_pneu_sd = Column(Numeric)
 	OUT_proj_pneu = Column(Numeric)
 
 
@@ -536,34 +526,24 @@ class Pecota_raw_batters(Base):
 
 
 class Pecota_padj_batters(Base):
-	__tablename__ = 'pecota_bat_park_adjusted'
+	__tablename__ = 'pecota_bat_park_adjusted_deciles'
 	__table_args__ = {'schema': 'jjudge'}
 
 	batter 	 = Column(Integer, primary_key = True)
 	proj_year  = Column(Integer, primary_key = True)
 	vintage = Column(DateTime, primary_key = True)
-	proj_dRC_plus = Column(Numeric)
-	proj_dRC_SD = Column(Numeric)
-	proj_dRAA_PA = Column(Numeric)
-	proj_dRAA_PA_SD = Column(Numeric)
+	decile  = Column(Integer, primary_key = True)
+	DRC = Column(Numeric)
+	dRAA_PA = Column(Numeric)
 	HR_proj_padj = Column(Numeric)
-	HR_proj_padj_sd = Column(Numeric)
 	B3_proj_padj = Column(Numeric)
-	B3_proj_padj_sd = Column(Numeric)
 	B2_proj_padj = Column(Numeric)
-	B2_proj_padj_sd = Column(Numeric)
 	B1_proj_padj = Column(Numeric)
-	B1_proj_padj_sd = Column(Numeric)
 	ROE_proj_padj = Column(Numeric)
-	ROE_proj_padj_sd = Column(Numeric)
 	HBP_proj_padj = Column(Numeric)
-	HBP_proj_padj_sd = Column(Numeric)
 	BB_proj_padj = Column(Numeric)
-	BB_proj_padj_sd = Column(Numeric)
 	SO_proj_padj = Column(Numeric)
-	SO_proj_padj_sd = Column(Numeric)
 	GB_proj_padj = Column(Numeric)
-	GB_proj_padj_sd = Column(Numeric)
 	OUT_proj_padj = Column(Numeric)
 
 
@@ -572,68 +552,50 @@ class Pecota_padj_batters(Base):
 
 
 class Pecota_raw_pitchers(Base):
-	__tablename__ = 'pecota_pit_park_neutral'
+	__tablename__ = 'pecota_pit_park_neutral_deciles'
 	__table_args__ = {'schema': 'jjudge'}
 	pitcher = Column(Integer, primary_key = True)
 	proj_year  = Column(Integer, primary_key = True)
+	decile  = Column(Integer, primary_key = True)
 	vintage = Column(DateTime, primary_key = True)
 	proj_DRA = Column(Numeric)
-	proj_DRA_SD = Column(Numeric)
 	HR_proj_pneu = Column(Numeric)
-	HR_proj_pneu_sd = Column(Numeric)
 	B3_proj_pneu = Column(Numeric)
-	B3_proj_pneu_sd = Column(Numeric)
 	B2_proj_pneu = Column(Numeric)
-	B2_proj_pneu_sd = Column(Numeric)
 	B1_proj_pneu = Column(Numeric)
-	B1_proj_pneu_sd = Column(Numeric)
 	ROE_proj_pneu = Column(Numeric)
-	ROE_proj_pneu_sd = Column(Numeric)
 	HBP_proj_pneu = Column(Numeric)
-	HBP_proj_pneu_sd = Column(Numeric)
 	BB_proj_pneu = Column(Numeric)
-	BB_proj_pneu_sd = Column(Numeric)
 	SO_proj_pneu = Column(Numeric)
-	SO_proj_pneu_sd = Column(Numeric)
 	OUT_proj_pneu = Column(Numeric)
 	GB_proj_pneu = Column(Numeric)
-	GB_proj_pneu_sd = Column(Numeric)
 	proj_DRA_minus= Column(Numeric)
-	proj_cfip = Column(Numeric)
+	proj_cFIP = Column(Numeric)
 	def __repr__(self):
 		return "{}({!r})".format(self.__class__.__name__, self.__dict__)
 
 
 
 class Pecota_padj_pitchers(Base):
-	__tablename__ = 'pecota_pit_park_adjusted'
+	__tablename__ = 'pecota_pit_park_adjusted_deciles'
 	__table_args__ = {'schema': 'jjudge'}
 	pitcher = Column(Integer, primary_key = True)
 	proj_year  = Column(Integer, primary_key = True)
 	vintage = Column(DateTime, primary_key = True)
+	decile  = Column(Integer, primary_key = True)
 	proj_DRA = Column(Numeric)
-	proj_DRA_SD = Column(Numeric)
 	HR_proj_padj = Column(Numeric)
-	HR_proj_padj_sd = Column(Numeric)
 	B3_proj_padj = Column(Numeric)
-	B3_proj_padj_sd = Column(Numeric)
 	B2_proj_padj = Column(Numeric)
-	B2_proj_padj_sd = Column(Numeric)
 	B1_proj_padj = Column(Numeric)
-	B1_proj_padj_sd = Column(Numeric)
 	ROE_proj_padj = Column(Numeric)
-	ROE_proj_padj_sd = Column(Numeric)
 	HBP_proj_padj = Column(Numeric)
-	HBP_proj_padj_sd = Column(Numeric)
 	BB_proj_padj = Column(Numeric)
-	BB_proj_padj_sd = Column(Numeric)
 	SO_proj_padj = Column(Numeric)
-	SO_proj_padj_sd = Column(Numeric)
 	OUT_proj_padj = Column(Numeric)
 	GB_proj_padj = Column(Numeric)
-	GB_proj_padj_sd = Column(Numeric)
 	proj_DRA_minus= Column(Numeric)
-	proj_cfip = Column(Numeric)
+	proj_cFIP = Column(Numeric)
 	def __repr__(self):
 		return "{}({!r})".format(self.__class__.__name__, self.__dict__)
 
