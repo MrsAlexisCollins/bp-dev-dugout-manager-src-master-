@@ -11,7 +11,7 @@ vintage_last = session_write.query(func.max(Bp_pecota_pitching_park_adj.created_
 vintage_last_judge = session_read.query(func.max(Pecota_padj_pitchers.vintage)).scalar() 
 print(vintage_last_judge ,vintage_last)
 if vintage_last_judge >   vintage_last:
-    pecota_raw = session_read.query(Pecota_padj_pitchers).filter(Pecota_padj_pitchers.vintage == vintage_last_judge, Pecota_padj_pitchers.decile==5).all()
+    pecota_raw = session_read.query(Pecota_padj_pitchers).filter(Pecota_padj_pitchers.vintage == vintage_last_judge ).all()
     session_write.query(Bp_pecota_pitching_park_adj).delete()   
 
     for row in pecota_raw:
@@ -21,6 +21,7 @@ if vintage_last_judge >   vintage_last:
         new_entry['created_datetime'] =  row.vintage
         new_entry['dra'] = row.proj_DRA
         new_entry['dra_minus'] = row.proj_DRA_minus
+        new_entry['decile'] = int(row.decile)
         new_entry['cfip'] = row.proj_cFIP  
         new_entry['hr_pa'] = row.HR_proj_padj
         new_entry['b3_pa'] = row.B3_proj_padj
