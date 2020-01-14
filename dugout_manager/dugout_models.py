@@ -1071,3 +1071,45 @@ class Pecota_bpf(Base):
 	def __repr__(self):
 		return "{}({!r})".format(self.__class__.__name__, self.__dict__)
 
+
+#### legacy stats
+
+class Stats_legacy_batting_daily(Base):
+	__tablename__ = 'bat_master'
+	__table_args__ = {'schema': 'stats'}
+	id = Column(Integer,primary_key = True)
+	bpid= Column(Integer )
+	season = Column(Integer )
+	team_name    = Column(String )
+	level_name    = Column(String )
+	version  = Column(DateTime )
+	pa  = Column(Numeric) 
+	drc_plus = Column(Numeric) 
+	drc_raa = Column(Numeric)  
+	fraa = Column(Numeric) 
+	brr = Column(Numeric) 
+	pos_adj = Column(Numeric) 
+	rep_level = Column(Numeric) 
+	drc_warp = Column(Numeric) 
+	
+	def __repr__(self):
+		return "{}({!r})".format(self.__class__.__name__, self.__dict__)
+
+
+class Stats_legacy_pitching_daily(Base):
+	__tablename__ = 'pit_master'
+	__table_args__ = {'schema': 'stats'}
+	id = Column(Integer,primary_key = True)
+	bpid= Column(Integer )
+	season = Column(Integer )
+	team_name    = Column(String )
+	level_name    = Column(String )
+	version  = Column(DateTime )
+	pa   = Column(Numeric) 
+	dra   = Column(Numeric) 
+	dra_minus = Column(Numeric) 
+	cfip = Column(Numeric) 
+	dra_pwarp = Column(Numeric) 
+	
+	def __repr__(self):
+		return "{}({!r})".format(self.__class__.__name__, self.__dict__)

@@ -720,6 +720,46 @@ class Pecota_of_assists(Base):
 		return "{}({!r})".format(self.__class__.__name__, self.__dict__)
 
 
+#### legacy stats
+
+class Legacy_batting_daily(Base):
+	__tablename__ = 'bat_master'
+	__table_args__ = {'schema': 'legacy_stats'}
+	batter= Column(Integer, primary_key = True)
+	year= Column(Integer, primary_key = True)
+	lvl    = Column(String, primary_key = True)
+	team   = Column(String, primary_key = True)
+	version_date = Column(DateTime, primary_key = True)
+	pa   = Column(Numeric) 
+	drc_plus = Column(Numeric) 
+	drc_raa = Column(Numeric)  
+	fraa = Column(Numeric) 
+	brr = Column(Numeric) 
+	pos_adj = Column(Numeric) 
+	rep_level = Column(Numeric) 
+	drc_warp = Column(Numeric) 
+	
+	def __repr__(self):
+		return "{}({!r})".format(self.__class__.__name__, self.__dict__)
+
+
+class Legacy_pitching_daily(Base):
+	__tablename__ = 'pit_master'
+	__table_args__ = {'schema': 'legacy_stats'}
+	pitcher= Column(Integer, primary_key = True)
+	year= Column(Integer, primary_key = True)
+	lvl    = Column(String, primary_key = True)
+	team    = Column(String, primary_key = True)
+	version_date = Column(DateTime, primary_key = True)
+	pa   = Column(Numeric) 
+	dra   = Column(Numeric) 
+	dra_minus = Column(Numeric) 
+	cfip = Column(Numeric) 
+	dra_pwarp = Column(Numeric) 
+	
+	def __repr__(self):
+		return "{}({!r})".format(self.__class__.__name__, self.__dict__)
+
 ### Reference Tables
 
 class Pecota_ref_bat_events_by_lineup(Base):
