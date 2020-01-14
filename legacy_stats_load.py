@@ -48,4 +48,4 @@ for row in pitching:
 
 	new_row = Stats_legacy_pitching_daily(**new_entry)
 	session_write.add(new_row) 
-	session_write.commit()
+	# session_write.commit()
