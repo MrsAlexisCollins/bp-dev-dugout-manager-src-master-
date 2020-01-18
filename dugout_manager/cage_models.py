@@ -503,6 +503,7 @@ class Pecota_raw_batters(Base):
 
 	batter 	 = Column(Integer, primary_key = True)
 	proj_year  = Column(Integer, primary_key = True)
+	year_number =  Column(Integer, primary_key = True)
 	vintage = Column(DateTime, primary_key = True)
 	decile  = Column(Integer, primary_key = True)
 	DRC = Column(Numeric)
@@ -531,6 +532,7 @@ class Pecota_padj_batters(Base):
 
 	batter 	 = Column(Integer, primary_key = True)
 	proj_year  = Column(Integer, primary_key = True)
+	year_number =  Column(Integer, primary_key = True)
 	vintage = Column(DateTime, primary_key = True)
 	decile  = Column(Integer, primary_key = True)
 	DRC = Column(Numeric)
@@ -556,6 +558,7 @@ class Pecota_raw_pitchers(Base):
 	__table_args__ = {'schema': 'jjudge'}
 	pitcher = Column(Integer, primary_key = True)
 	proj_year  = Column(Integer, primary_key = True)
+	year_number =  Column(Integer, primary_key = True)
 	decile  = Column(Integer, primary_key = True)
 	vintage = Column(DateTime, primary_key = True)
 	proj_DRA = Column(Numeric)
@@ -581,6 +584,7 @@ class Pecota_padj_pitchers(Base):
 	__table_args__ = {'schema': 'jjudge'}
 	pitcher = Column(Integer, primary_key = True)
 	proj_year  = Column(Integer, primary_key = True)
+	year_number =  Column(Integer, primary_key = True)
 	vintage = Column(DateTime, primary_key = True)
 	decile  = Column(Integer, primary_key = True)
 	proj_DRA = Column(Numeric)

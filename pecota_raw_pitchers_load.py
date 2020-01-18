@@ -18,6 +18,7 @@ if vintage_last_judge >   vintage_last:
         new_entry = {}
         new_entry['bpid'] =  int(row.pitcher)
         new_entry['season']  = int(row.proj_year)
+        new_entry['year_number']  = row.year_number
         new_entry['created_datetime'] =  row.vintage
         new_entry['dra'] = row.proj_DRA
         new_entry['dra_minus'] = row.proj_DRA_minus
