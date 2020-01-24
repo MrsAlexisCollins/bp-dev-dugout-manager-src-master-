@@ -1,16 +1,16 @@
 
-from dugout_manager.connectors.read import session_read  
-from dugout_manager.connectors.write import session_write
+from Pecotadugout_manager.connectors.cage import session_cage  
+from Pecotadugout_manager.connectors.dugout import session_dugout
 from dugout_manager.cage_models import Bp_xref, Mlb_team_rosters,    Mlb_teams,Mlb_people
 from dugout_manager.dugout_models import   Bp_teams, Bp_team_rosters 
 from sqlalchemy.sql.expression import func
 
 from datetime import datetime
 
-mlb_team_rosters = session_read.query(Mlb_team_rosters).join(Mlb_people, Bp_xref).all()
+mlb_team_rosters = session_cage.query(Mlb_team_rosters).join(Mlb_people, Bp_xref).all()
 
-all_mlb_teams = session_read.query(Mlb_teams)
-bp_teams = session_write.query(Bp_teams)
+all_mlb_teams = session_cage.query(Mlb_teams)
+bp_teams = session_dugout.query(Bp_teams)
 
 for row in mlb_team_rosters:
     new_roster_entry = {}
@@ -29,5 +29,5 @@ for row in mlb_team_rosters:
     new_roster_entry['updated_timestamp'] = datetime.now()  
     
     new_roster_entry_row = Bp_team_rosters(**new_roster_entry)
-    session_write.add(new_roster_entry_row) 
-    #session_write.commit()
+    session_dugout.add(new_roster_entry_row) 
+    #session_dugout.commit()

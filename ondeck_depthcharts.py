@@ -1,5 +1,5 @@
 
-from dugout_manager.connectors.write import session_write
+from Pecotadugout_manager.connectors.dugout import session_dugout
 from dugout_manager.connectors.ondeck import session_ondeck
 from dugout_manager.ondeck_models import Od_depth_charts_batters, Od_depth_charts_pitchers
 from dugout_manager.dugout_models import Bp_people_search
@@ -9,7 +9,7 @@ from datetime import datetime
 ### Built to prime the system now, not update
 
 ### select active 40 
-bp_persons = session_write.query(Bp_people_search).filter( Bp_people_search.active==True, Bp_people_search.on_40 == True)
+bp_persons = session_dugout.query(Bp_people_search).filter( Bp_people_search.active==True, Bp_people_search.on_40 == True)
 bp_pitchers = bp_persons.filter(Bp_people_search.position=='P').all() 
 bp_batters = bp_persons.filter(Bp_people_search.position != 'P').all()
 

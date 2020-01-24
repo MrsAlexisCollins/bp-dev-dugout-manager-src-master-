@@ -1,5 +1,5 @@
 
-from dugout_manager.connectors.write import session_write
+from Pecotadugout_manager.connectors.dugout import session_dugout
 from dugout_manager.connectors.ondeck import session_ondeck
 from dugout_manager.ondeck_models import Od_depth_charts_batters, Od_depth_charts_pitchers
 from dugout_manager.dugout_models import  Bp_pecota_depthcharts_pitchers, Bp_pecota_depthcharts_batters
@@ -11,7 +11,7 @@ from datetime import datetime
 dc_batters = session_ondeck.query(Od_depth_charts_batters) 
 
 # clear the dugout
-pecota_depthcharts_batters = session_write.query(Bp_pecota_depthcharts_batters) 
+pecota_depthcharts_batters = session_dugout.query(Bp_pecota_depthcharts_batters) 
 pecota_depthcharts_batters.delete() 
 #build new entries
 new_entries = []
@@ -35,14 +35,14 @@ for row in dc_batters:
 
 for new_entry in new_entries:
 	new_row = Bp_pecota_depthcharts_batters(**new_entry)
-	session_write.add(new_row)
+	session_dugout.add(new_row)
 
-session_write.commit()
+session_dugout.commit()
 
 ### read in existing work from admins
 dc_pitchers = session_ondeck.query(Od_depth_charts_pitchers) 
 # clear the dugout
-pecota_depthcharts_pitchers = session_write.query(Bp_pecota_depthcharts_pitchers) 
+pecota_depthcharts_pitchers = session_dugout.query(Bp_pecota_depthcharts_pitchers) 
 pecota_depthcharts_pitchers.delete() 
 #build new entries
 new_entries = []
@@ -63,6 +63,6 @@ for row in dc_pitchers:
 
 for new_entry in new_entries:
 	new_row = Bp_pecota_depthcharts_pitchers(**new_entry)
-	session_write.add(new_row)
+	session_dugout.add(new_row)
 
-session_write.commit()
+session_dugout.commit()

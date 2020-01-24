@@ -1,13 +1,13 @@
 
-from dugout_manager.connectors.read import session_read  
-from dugout_manager.connectors.write import session_write
+from Pecotadugout_manager.connectors.cage import session_cage  
+from Pecotadugout_manager.connectors.dugout import session_dugout
 from dugout_manager.cage_models import   Mlb_people_search
 from dugout_manager.dugout_models import Bp_people_search 
 
 from datetime import datetime
 
-bp_persons = session_write.query(Bp_people_search)
-mlb_persons = session_read.query(Mlb_people_search).all()
+bp_persons = session_dugout.query(Bp_people_search)
+mlb_persons = session_cage.query(Mlb_people_search).all()
 bp_persons.delete()   
 new_entries = []
 for row in mlb_persons:
@@ -43,8 +43,8 @@ for row in mlb_persons:
 
 for new_entry in new_entries:
     new_row = Bp_people_search(**new_entry)
-    session_write.add(new_row)
+    session_dugout.add(new_row)
 
   
-session_write.commit()
+session_dugout.commit()
 

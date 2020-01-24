@@ -1,30 +1,30 @@
 
-from dugout_manager.connectors.read import session_read  
-from dugout_manager.connectors.write import session_write
+from Pecotadugout_manager.connectors.cage import session_cage  
+from Pecotadugout_manager.connectors.dugout import session_dugout
 from dugout_manager.cage_models import Mlb_leagues, Mlb_levels, Mlb_divisions, Mlb_teams
 from dugout_manager.dugout_models import  Bp_leagues, Bp_divisions, Bp_levels, Bp_organizations, Bp_teams, Bp_governing_bodies
 from sqlalchemy import func, exists, or_, and_
 from datetime import datetime
 
-bp_governing_bodies = session_write.query(Bp_governing_bodies)
-bp_organizations = session_write.query(Bp_organizations)
-bp_leagues = session_write.query(Bp_leagues)
-bp_levels = session_write.query(Bp_levels)
-bp_divisions = session_write.query(Bp_divisions)
-mlb_leagues = session_read.query(Mlb_leagues)
-mlb_levels = session_read.query(Mlb_levels)
-mlb_divisions = session_read.query(Mlb_divisions)
+bp_governing_bodies = session_dugout.query(Bp_governing_bodies)
+bp_organizations = session_dugout.query(Bp_organizations)
+bp_leagues = session_dugout.query(Bp_leagues)
+bp_levels = session_dugout.query(Bp_levels)
+bp_divisions = session_dugout.query(Bp_divisions)
+mlb_leagues = session_cage.query(Mlb_leagues)
+mlb_levels = session_cage.query(Mlb_levels)
+mlb_divisions = session_cage.query(Mlb_divisions)
 ######### TO DO dupe management
 
 ######### fetch data FROM CAGE
-all_mlb_teams = session_read.query(Mlb_teams)
+all_mlb_teams = session_cage.query(Mlb_teams)
 mlb_teams = all_mlb_teams.join(Mlb_leagues,  Mlb_levels,  Mlb_divisions).filter(
     Mlb_teams.active == 'True',
     Mlb_levels.code.in_(['win','aaa', 'aax','afa','afx','asx','rok','roa', 'mlb'])
 ).order_by(Mlb_levels.code).all()
 
 
-team_count = session_write.query(func.count(Bp_teams.team_id)).scalar() #this should change to be max() not count()
+team_count = session_dugout.query(func.count(Bp_teams.team_id)).scalar() #this should change to be max() not count()
 team_entries = []
 for team_row in mlb_teams:
     new_team_entry = {}
@@ -68,6 +68,6 @@ for team_row in mlb_teams:
 
 for team_entry in team_entries:
     new_team_row = Bp_teams(**team_entry)
-    session_write.add(new_team_row)
+    session_dugout.add(new_team_row)
 
-#session_write.commit()
+#session_dugout.commit()

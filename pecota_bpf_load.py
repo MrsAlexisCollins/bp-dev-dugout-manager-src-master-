@@ -1,17 +1,17 @@
-from dugout_manager.connectors.read import session_read  
-from dugout_manager.connectors.write import session_write
+from Pecotadugout_manager.connectors.cage import session_cage  
+from Pecotadugout_manager.connectors.dugout import session_dugout
 from dugout_manager.cage_models import Judge_pecota_bpf
 from dugout_manager.dugout_models import Pecota_bpf, Bp_organizations, Xref_org
 from sqlalchemy import func
 from datetime import datetime
 
-bp_organizations = session_write.query(Bp_organizations).join(Xref_org, Bp_organizations.org_id == Xref_org.org_id)
+bp_organizations = session_dugout.query(Bp_organizations).join(Xref_org, Bp_organizations.org_id == Xref_org.org_id)
 
 ## pick org_id, cast year to season integer
 
-judge_bpf = session_read.query(Judge_pecota_bpf).all()
+judge_bpf = session_cage.query(Judge_pecota_bpf).all()
 
-pecota_bpf = session_write.query(Pecota_bpf) 
+pecota_bpf = session_dugout.query(Pecota_bpf) 
 pecota_bpf.delete()  
 
 new_entries = []
@@ -45,6 +45,6 @@ for row in judge_bpf:
 
 for new_entry in new_entries:
     new_row = Pecota_bpf(**new_entry)
-    session_write.add(new_row)
+    session_dugout.add(new_row)
 
-session_write.commit()
+session_dugout.commit()

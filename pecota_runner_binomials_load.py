@@ -1,13 +1,13 @@
-from dugout_manager.connectors.read import session_read  
-from dugout_manager.connectors.write import session_write
+from Pecotadugout_manager.connectors.cage import session_cage  
+from Pecotadugout_manager.connectors.dugout import session_dugout
 from dugout_manager.cage_models import Pecota_runner_binomials
 from dugout_manager.dugout_models import Bp_pecota_runner_binomials
 from sqlalchemy import func
 from datetime import datetime
 
 
-pecota_raw = session_read.query(Pecota_runner_binomials).all()
-session_write.query(Bp_pecota_runner_binomials).delete()  
+pecota_raw = session_cage.query(Pecota_runner_binomials).all()
+session_dugout.query(Bp_pecota_runner_binomials).delete()  
 
 for row in pecota_raw:
     new_entry = {}
@@ -20,6 +20,6 @@ for row in pecota_raw:
 
 
     new_row = Bp_pecota_runner_binomials(**new_entry)
-    session_write.add(new_row) 
+    session_dugout.add(new_row) 
 
-session_write.commit()
+session_dugout.commit()

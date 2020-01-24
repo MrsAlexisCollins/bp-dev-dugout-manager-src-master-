@@ -6,7 +6,7 @@ from sqlalchemy.orm  import Session
 
 from .. import settings
 
-engine_read = create_engine(settings.BP_CAGE_URL) 
-session_read = Session(engine_read)
+engine_cage = create_engine(settings.BP_CAGE_URL) 
+session_cage = Session(engine_cage)
 
 ## manage the acquistion of data here

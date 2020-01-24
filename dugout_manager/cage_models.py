@@ -760,6 +760,14 @@ class Legacy_pitching_daily(Base):
 	def __repr__(self):
 		return "{}({!r})".format(self.__class__.__name__, self.__dict__)
 
+class Scoresheet_leagues(Base):
+	__tablename__ = 'scoresheet_leagues'
+	__table_args__ = {'schema': 'ingest'}
+	id = Column(Integer, primary_key = True)
+	league_name = Column(String)
+	league_path = Column(String)
+
+
 ### Reference Tables
 
 class Pecota_ref_bat_events_by_lineup(Base):

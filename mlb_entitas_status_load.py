@@ -1,20 +1,20 @@
 
-from dugout_manager.connectors.read import session_read  
-from dugout_manager.connectors.write import session_write
+from Pecotadugout_manager.connectors.cage import session_cage  
+from Pecotadugout_manager.connectors.dugout import session_dugout
 from dugout_manager.cage_models import Bp_xref,  Mlb_people_roster_status,   Mlb_teams,Mlb_people
 from dugout_manager.dugout_models import   Bp_teams, Bp_people_roster_status 
 
 from datetime import datetime
 
 ## copy is fairly direct, need to replace MLB team and player IDs with BP values
-all_mlb_teams = session_read.query(Mlb_teams)
-bp_teams = session_write.query(Bp_teams)
+all_mlb_teams = session_cage.query(Mlb_teams)
+bp_teams = session_dugout.query(Bp_teams)
 
-mlb_people_roster_status = session_read.query(Mlb_people_roster_status).join(Mlb_people,Bp_xref).all()
+mlb_people_roster_status = session_cage.query(Mlb_people_roster_status).join(Mlb_people,Bp_xref).all()
 
 new_status_entries = []
 # this is a light load relatively speaking, so just flush and load
-session_write.query(Bp_people_roster_status).delete()
+session_dugout.query(Bp_people_roster_status).delete()
 
 for row in mlb_people_roster_status:
     new_status_entry = {}
@@ -38,6 +38,6 @@ for row in mlb_people_roster_status:
     new_status_entry['updated_timestamp']  = datetime.now()  
 
     new_status_entry_row = Bp_people_roster_status(**new_status_entry)
-    session_write.add(new_status_entry_row) 
+    session_dugout.add(new_status_entry_row) 
 
-session_write.commit()
+session_dugout.commit()

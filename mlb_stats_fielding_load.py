@@ -1,15 +1,15 @@
-from dugout_manager.connectors.read import session_read  
-from dugout_manager.connectors.write import session_write
+from Pecotadugout_manager.connectors.cage import session_cage  
+from Pecotadugout_manager.connectors.dugout import session_dugout
 from dugout_manager.cage_models import Mlb_stats_fielding,Mlb_people, Bp_xref,Mlb_teams
 from dugout_manager.dugout_models import Bp_teams, Bp_stats_fielding
 from sqlalchemy import func
 from datetime import datetime
 
-all_mlb_teams = session_read.query(Mlb_teams)
-bp_teams = session_write.query(Bp_teams)
+all_mlb_teams = session_cage.query(Mlb_teams)
+bp_teams = session_dugout.query(Bp_teams)
 ######### TO DO dupe management
 
-mlb_stats_fielding = session_read.query(Mlb_stats_fielding).join(Mlb_people, Bp_xref).all()
+mlb_stats_fielding = session_cage.query(Mlb_stats_fielding).join(Mlb_people, Bp_xref).all()
 
 for row in mlb_stats_fielding:
     new_entry = {}
@@ -42,6 +42,6 @@ for row in mlb_stats_fielding:
 
 
     new_row = Bp_stats_fielding(**new_entry)
-    session_write.add(new_row) 
+    session_dugout.add(new_row) 
 
-    session_write.commit()
+    session_dugout.commit()

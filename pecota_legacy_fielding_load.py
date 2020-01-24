@@ -1,12 +1,12 @@
-from dugout_manager.connectors.read import session_read  
-from dugout_manager.connectors.write import session_write
+from Pecotadugout_manager.connectors.cage import session_cage  
+from Pecotadugout_manager.connectors.dugout import session_dugout
 from dugout_manager.cage_models import Pecota_fielder_binomials, Pecota_of_assists
 from dugout_manager.dugout_models import Bp_pecota_fielder_binomials, Bp_pecota_of_assists
 from sqlalchemy import func 
 
 
-pecota_raw = session_read.query(Pecota_fielder_binomials).all()
-session_write.query(Bp_pecota_fielder_binomials).delete()  
+pecota_raw = session_cage.query(Pecota_fielder_binomials).all()
+session_dugout.query(Bp_pecota_fielder_binomials).delete()  
 
 for row in pecota_raw:
 	new_entry = {}
@@ -22,15 +22,15 @@ for row in pecota_raw:
 	new_entry['pm_rt_raw'] = row.pm_rt_raw
 
 	new_row = Bp_pecota_fielder_binomials(**new_entry)
-	session_write.add(new_row) 
+	session_dugout.add(new_row) 
 
-session_write.commit()
-
-
+session_dugout.commit()
 
 
-pecota_raw = session_read.query(Pecota_of_assists).all()
-session_write.query(Bp_pecota_of_assists).delete()  
+
+
+pecota_raw = session_cage.query(Pecota_of_assists).all()
+session_dugout.query(Bp_pecota_of_assists).delete()  
 
 for row in pecota_raw:
 	new_entry = {}
@@ -55,7 +55,7 @@ for row in pecota_raw:
 	new_entry['g_of_lg_adj'] = row.g_of_lg_adj
 
 	new_row = Bp_pecota_of_assists(**new_entry)
-	session_write.add(new_row) 
+	session_dugout.add(new_row) 
 
-session_write.commit()
+session_dugout.commit()
 

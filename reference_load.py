@@ -1,15 +1,15 @@
-from dugout_manager.connectors.read import session_read  
-from dugout_manager.connectors.write import session_write
+from Pecotadugout_manager.connectors.cage import session_cage  
+from Pecotadugout_manager.connectors.dugout import session_dugout
 from dugout_manager.cage_models import  Pecota_ref_bat_events_by_lineup,  Pecota_ref_dyna_lg_pos_batting_stats, Pecota_ref_pitcher_league_pos
 from dugout_manager.dugout_models import Bp_leagues,  Bp_levels,  Ref_batter_events_league_lineup, Ref_batting_stats_league_position, Ref_pitching_stats_league_position
 from sqlalchemy import func
 from datetime import datetime
 
-bp_leagues = session_write.query(Bp_leagues)
-bp_levels = session_write.query(Bp_levels)
+bp_leagues = session_dugout.query(Bp_leagues)
+bp_levels = session_dugout.query(Bp_levels)
 
 ### requires tabulation
-batting_events_by_lineup_cage = session_read.query(Pecota_ref_bat_events_by_lineup).all()
+batting_events_by_lineup_cage = session_cage.query(Pecota_ref_bat_events_by_lineup).all()
 
 new_entries = [] 
 for row in batting_events_by_lineup_cage:
@@ -65,7 +65,7 @@ for row in batting_events_by_lineup_cage:
 
 for entry in new_entries:
     new_row = Ref_batter_events_league_lineup(**entry)
-    session_write.add(new_row)
+    session_dugout.add(new_row)
 
 
 
@@ -73,7 +73,7 @@ for entry in new_entries:
 
 
 
-batting_stats_by_position_cage = session_read.query(Pecota_ref_dyna_lg_pos_batting_stats).filter(Pecota_ref_dyna_lg_pos_batting_stats.lvl=='mlb').all()
+batting_stats_by_position_cage = session_cage.query(Pecota_ref_dyna_lg_pos_batting_stats).filter(Pecota_ref_dyna_lg_pos_batting_stats.lvl=='mlb').all()
 
 new_entries = [] 
 for row in batting_stats_by_position_cage:
@@ -202,14 +202,14 @@ for row in batting_stats_by_position_cage:
 
 for entry in new_entries:
     new_row = Ref_batting_stats_league_position(**entry)
-    session_write.add(new_row)
+    session_dugout.add(new_row)
 
 
 
 
 
 
-pitching_stats_by_position_cage = session_read.query(Pecota_ref_pitcher_league_pos).all()
+pitching_stats_by_position_cage = session_cage.query(Pecota_ref_pitcher_league_pos).all()
 
 new_entries = [] 
 for row in pitching_stats_by_position_cage:
@@ -317,6 +317,6 @@ for row in pitching_stats_by_position_cage:
 
 for entry in new_entries:
     new_row = Ref_pitching_stats_league_position(**entry)
-    session_write.add(new_row)
+    session_dugout.add(new_row)
 
-session_write.commit()
+session_dugout.commit()

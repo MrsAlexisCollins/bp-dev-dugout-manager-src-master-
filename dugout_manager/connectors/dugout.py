@@ -6,5 +6,5 @@ from sqlalchemy.orm  import Session
 
 from .. import settings
 
-engine_write = create_engine(settings.BP_DUGOUT_URL) 
-session_write = Session(engine_write)
+engine_dugout = create_engine(settings.BP_DUGOUT_URL) 
+session_dugout = Session(engine_dugout)

@@ -1,6 +1,6 @@
 
-from dugout_manager.connectors.read import session_read  
-from dugout_manager.connectors.write import session_write
+from Pecotadugout_manager.connectors.cage import session_cage  
+from Pecotadugout_manager.connectors.dugout import session_dugout
 from dugout_manager.cage_models import   Bp_xref,  Mlb_people_roster_entries , Mlb_teams,Mlb_people
 from dugout_manager.dugout_models import  Bp_teams, Bp_people_roster_entries 
 from sqlalchemy.sql.expression import func
@@ -8,16 +8,16 @@ from sqlalchemy.sql.expression import func
 from datetime import datetime
 
 ## copy is fairly direct, need to replace MLB team and player IDs with BP values
-all_mlb_teams = session_read.query(Mlb_teams)
-bp_teams = session_write.query(Bp_teams)
+all_mlb_teams = session_cage.query(Mlb_teams)
+bp_teams = session_dugout.query(Bp_teams)
 
-last_bp_roster_entry_status_date = session_write.query(func.max(Bp_people_roster_entries.status_date)).scalar()
+last_bp_roster_entry_status_date = session_dugout.query(func.max(Bp_people_roster_entries.status_date)).scalar()
 #
-mlb_people_roster_entries = session_read.query(Mlb_people_roster_entries).filter(
+mlb_people_roster_entries = session_cage.query(Mlb_people_roster_entries).filter(
     Mlb_people_roster_entries.status_date > last_bp_roster_entry_status_date
     ).all()
 
-print(session_read.query(Mlb_people_roster_entries).filter(
+print(session_cage.query(Mlb_people_roster_entries).filter(
     Mlb_people_roster_entries.status_date > last_bp_roster_entry_status_date
     )  )
 
@@ -50,7 +50,7 @@ for row in mlb_people_roster_entries:
 
 for roster_entry in new_roster_entries:
     new_roster_entry_row = Bp_people_roster_entries(**roster_entry)
-    session_write.add(new_roster_entry_row) 
+    session_dugout.add(new_roster_entry_row) 
 
 
-# session_write.commit()
+# session_dugout.commit()
