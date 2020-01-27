@@ -1,5 +1,5 @@
 from dugout_manager.cage_models import Scoresheet_leagues
-from Pecotadugout_manager.connectors.cage import session_cage   #cage bound
+from dugout_manager.connectors.cage import session_cage   #cage bound
 import requests
 from bs4 import BeautifulSoup
 
@@ -13,7 +13,6 @@ leagues_soup = BeautifulSoup(leagues_page.content,'html.parser')
 leagues = leagues_soup.findAll('table')[1].findAll('a')
 session_cage.query(Scoresheet_leagues).delete()  
 
-league_data = []
 for league in leagues:
     new_leauge = {}
     new_leauge['league_name'] = league.contents[0]

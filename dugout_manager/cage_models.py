@@ -768,6 +768,37 @@ class Scoresheet_leagues(Base):
 	league_path = Column(String)
 
 
+
+class Scoresheet_players(Base):
+	__tablename__ = 'scoresheet_players'
+	__table_args__ = {'schema': 'ingest'}
+	id = Column(Integer, primary_key = True)
+	ssbb = Column(Integer)  
+	mlbam = Column(Integer)  
+	nl = Column(Integer)  
+	pos = Column(String)
+	h = Column(String)
+	age = Column(Integer)
+	team = Column(String)
+	firstName = Column(String)
+	lastName = Column(String)
+	b1 = Column('1b',Numeric)
+	b2 = Column('2b',Numeric)
+	b3 = Column('3b',Numeric)
+	ss = Column(Numeric)
+	of = Column(Numeric)
+	osbal = Column(Numeric)
+	ocsal = Column(Numeric)
+	osbnl = Column(Numeric)
+	ocsnl = Column(Numeric)
+	bavr = Column(Numeric)
+	obvr = Column(Numeric)
+	slvr = Column(Numeric)
+	bavl = Column(Numeric)
+	obvl = Column(Numeric)
+	slvl = Column(Numeric)
+
+
 ### Reference Tables
 
 class Pecota_ref_bat_events_by_lineup(Base):
