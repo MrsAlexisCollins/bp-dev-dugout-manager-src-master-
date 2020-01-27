@@ -1,6 +1,6 @@
 
-from Pecotadugout_manager.connectors.cage import session_cage  
-from Pecotadugout_manager.connectors.dugout import session_dugout
+from dugout_manager.connectors.cage import session_cage  
+from dugout_manager.connectors.dugout import session_dugout
 from dugout_manager.cage_models import   Mlb_people_search
 from dugout_manager.dugout_models import Bp_people_search 
 

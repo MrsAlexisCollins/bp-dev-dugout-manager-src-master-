@@ -1,5 +1,5 @@
-from Pecotadugout_manager.connectors.cage import session_cage  
-from Pecotadugout_manager.connectors.dugout import session_dugout
+from dugout_manager.connectors.cage import session_cage  
+from dugout_manager.connectors.dugout import session_dugout
 from dugout_manager.cage_models import Judge_pecota_bpf
 from dugout_manager.dugout_models import Pecota_bpf, Bp_organizations, Xref_org
 from sqlalchemy import func

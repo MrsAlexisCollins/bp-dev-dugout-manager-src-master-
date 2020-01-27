@@ -1,6 +1,6 @@
 
-from Pecotadugout_manager.connectors.cage import session_cage  
-from Pecotadugout_manager.connectors.dugout import session_dugout
+from dugout_manager.connectors.cage import session_cage  
+from dugout_manager.connectors.dugout import session_dugout
 from dugout_manager.cage_models import Bp_xref,  Mlb_people_roster_status,   Mlb_teams,Mlb_people
 from dugout_manager.dugout_models import   Bp_teams, Bp_people_roster_status 
 

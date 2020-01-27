@@ -1,5 +1,5 @@
-from Pecotadugout_manager.connectors.cage import session_cage  
-from Pecotadugout_manager.connectors.dugout import session_dugout
+from dugout_manager.connectors.cage import session_cage  
+from dugout_manager.connectors.dugout import session_dugout
 from dugout_manager.cage_models import Euston_contracts
 from dugout_manager.dugout_models import Bp_organizations, Xref_org, People_contracts
 from sqlalchemy import func

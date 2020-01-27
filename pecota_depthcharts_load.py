@@ -1,5 +1,5 @@
 
-from Pecotadugout_manager.connectors.dugout import session_dugout
+from dugout_manager.connectors.dugout import session_dugout
 from dugout_manager.connectors.ondeck import session_ondeck
 from dugout_manager.ondeck_models import Od_depth_charts_batters, Od_depth_charts_pitchers
 from dugout_manager.dugout_models import  Bp_pecota_depthcharts_pitchers, Bp_pecota_depthcharts_batters

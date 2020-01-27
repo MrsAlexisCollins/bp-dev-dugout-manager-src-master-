@@ -1,5 +1,5 @@
-from Pecotadugout_manager.connectors.cage import session_cage  
-from Pecotadugout_manager.connectors.dugout import session_dugout
+from dugout_manager.connectors.cage import session_cage  
+from dugout_manager.connectors.dugout import session_dugout
 from dugout_manager.cage_models import Mlb_stats_hitting,Mlb_people, Bp_xref,Mlb_teams
 from dugout_manager.dugout_models import Bp_teams, Bp_stats_hitting
 from sqlalchemy import func

@@ -1,5 +1,5 @@
-from Pecotadugout_manager.connectors.cage import session_cage  
-from Pecotadugout_manager.connectors.dugout import session_dugout
+from dugout_manager.connectors.cage import session_cage  
+from dugout_manager.connectors.dugout import session_dugout
 from dugout_manager.cage_models import  Pecota_ref_bat_events_by_lineup,  Pecota_ref_dyna_lg_pos_batting_stats, Pecota_ref_pitcher_league_pos
 from dugout_manager.dugout_models import Bp_leagues,  Bp_levels,  Ref_batter_events_league_lineup, Ref_batting_stats_league_position, Ref_pitching_stats_league_position
 from sqlalchemy import func

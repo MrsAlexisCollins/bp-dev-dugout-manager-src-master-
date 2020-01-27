@@ -1,5 +1,5 @@
-from Pecotadugout_manager.connectors.cage import session_cage  
-from Pecotadugout_manager.connectors.dugout import session_dugout
+from dugout_manager.connectors.cage import session_cage  
+from dugout_manager.connectors.dugout import session_dugout
 from dugout_manager.cage_models import  Legacy_batting_daily, Legacy_pitching_daily
 from dugout_manager.dugout_models import Stats_legacy_batting_daily, Stats_legacy_pitching_daily
 from sqlalchemy import func

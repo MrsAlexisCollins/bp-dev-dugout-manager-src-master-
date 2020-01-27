@@ -1,6 +1,6 @@
 
-from Pecotadugout_manager.connectors.cage import session_cage  
-from Pecotadugout_manager.connectors.dugout import session_dugout
+from dugout_manager.connectors.cage import session_cage  
+from dugout_manager.connectors.dugout import session_dugout
 from dugout_manager.cage_models import Mlb_leagues, Mlb_levels, Mlb_divisions, Mlb_teams
 from dugout_manager.dugout_models import  Bp_leagues, Bp_divisions, Bp_levels, Bp_organizations, Bp_teams, Bp_governing_bodies
 from sqlalchemy import func, exists, or_, and_
