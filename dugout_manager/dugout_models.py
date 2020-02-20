@@ -1113,3 +1113,36 @@ class Stats_legacy_pitching_daily(Base):
 	
 	def __repr__(self):
 		return "{}({!r})".format(self.__class__.__name__, self.__dict__)
+
+
+class Stats_scoresheet_players(Base):
+	__tablename__ = 'scoresheet_players'
+	__table_args__ = {'schema': 'stats'} 
+	bpid = Column(Integer)  
+	ssbb = Column(Integer, primary_key = True)  
+	nl = Column(Integer)  
+	pos = Column(String)
+	h = Column(String)
+	b1 = Column(Numeric)
+	b2 = Column(Numeric)
+	b3 = Column(Numeric)
+	ss = Column(Numeric)
+	of = Column(Numeric)
+	osbal = Column(Numeric)
+	ocsal = Column(Numeric)
+	osbnl = Column(Numeric)
+	ocsnl = Column(Numeric)
+	bavr = Column(Numeric)
+	obvr = Column(Numeric)
+	slvr = Column(Numeric)
+	bavl = Column(Numeric)
+	obvl = Column(Numeric)
+	slvl = Column(Numeric)
+
+
+class Stats_scoresheet_leagues(Base):
+	__tablename__ = 'scoresheet_leagues'
+	__table_args__ = {'schema': 'stats'}
+	id = Column(Integer, primary_key = True)
+	league_name = Column(String)
+	league_path = Column(String)

@@ -273,6 +273,8 @@ class Mlb_people(Base):
 	stats_hitting = relationship("Mlb_stats_hitting", back_populates="people")
 	stats_fielding = relationship("Mlb_stats_fielding", back_populates="people")
 	stats_pitching = relationship("Mlb_stats_pitching", back_populates="people")
+	scoresheet_players = relationship("Scoresheet_players", back_populates="people")
+
 	def __repr__(self):
 		return "{}({!r})".format(self.__class__.__name__, self.__dict__)
 
@@ -774,14 +776,14 @@ class Scoresheet_players(Base):
 	__table_args__ = {'schema': 'ingest'}
 	id = Column(Integer, primary_key = True)
 	ssbb = Column(Integer)  
-	mlbam = Column(Integer)  
+	mlbam = Column(Integer, ForeignKey('mlbapi.people.id'))  
 	nl = Column(Integer)  
 	pos = Column(String)
 	h = Column(String)
 	age = Column(Integer)
 	team = Column(String)
-	firstName = Column(String)
-	lastName = Column(String)
+	firstname = Column(String)
+	lastname = Column(String)
 	b1 = Column('1b',Numeric)
 	b2 = Column('2b',Numeric)
 	b3 = Column('3b',Numeric)
@@ -797,6 +799,7 @@ class Scoresheet_players(Base):
 	bavl = Column(Numeric)
 	obvl = Column(Numeric)
 	slvl = Column(Numeric)
+	people = relationship("Mlb_people", back_populates="scoresheet_players")	
 
 
 ### Reference Tables
