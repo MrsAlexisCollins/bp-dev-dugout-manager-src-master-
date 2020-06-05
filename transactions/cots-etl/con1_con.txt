@@ -1,4 +1,0 @@
-postgres
-172.104.15.153:5432
-after!ngest
-stager
