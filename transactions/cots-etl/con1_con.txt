@@ -1,6 +1,0 @@
-{
-    "dbname": "postgres",
-    "host": "172.104.15.153:5432",
-    "password": "after!ngest",
-    "user": "stager"
-}
