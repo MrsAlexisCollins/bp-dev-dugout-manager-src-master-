@@ -1,13 +1,19 @@
 """
 Creates class CotsETL for Cots extract, transform, and load process. Contains three functions within the class: 
 1. cotsExtract: function that calls BP postgresql server and obtains data from Cots Contracts. 
-2. cotsTransform: function that transfroms Cots Contract data into BP format. 
-3. cotsLoad: function that loads data back into BP postgresql server
+2. cotsTransformContracts: function that transfroms Cots Contract data into BP format. 
+3. cotsTransformContractsSeason: function that transforms Cots Contract data into seasonal BP format. 
+4. cotsLoad: function that loads data back into BP postgresql server
 
 Author: Martin Alonso 
 Date: 2019-10-16
 Update: 2020-05-26 - Cleaned cotsTransform
-Update: 2020-05-28 - Added safeguards in cotsTransform to prevent date duplication; cleaner first_season calculation and transaction_type
+Update: 2020-05-28 - Added safeguards in cotsTransform to prevent date duplication; 
+    cleaner first_season calculation and transaction_type
+Update: 2020-06-19 - Implemented corrections suggested by Robert Au; 
+    renamed cotsTransform to cotsTransformContracts; 
+    created new function cotsTransformContractsSeason to transform contract data into seasonal data;
+    changed code in cotsLoad to use mogrify and directly load into euston tables. 
 """
 
 # Import libraries 
@@ -20,6 +26,7 @@ import numpy as np
 import itertools
 import datetime
 import psycopg2 
+import json 
 import sys 
 import re 
 
@@ -27,22 +34,25 @@ class CotsETL():
     def __init__(self): 
         pass 
 
-    def cotsExtract(self): 
+    def cotsExtract(self, conn_args): 
         """
         Function that connects to BP PostgreSQL database and extracts Cots Contracts data. 
-        Takes no arguments and requires a txt file with the database connection parameters
+        Takes a single argument, a dictionary with the connection arguments: 
+            user, 
+            password, 
+            host, 
+            dbname.
         """
         
         # Load txt file with connection strings, create the connection string 
-        f = open("con1_con.txt", "r")
-        ls = [x.strip() for x in f]
+        conn_data = conn_args
 
         # Connection string requires that the list be in the following order: 
-        # ls[3]: user 
-        # ls[2]: password
-        # ls[1]: hostname 
-        # ls[0]: database 
-        conn_string = "postgresql+psycopg2://{}:{}@{}/{}".format(ls[3], ls[2], ls[1], ls[0])
+        conn_string = "postgresql+psycopg2://{}:{}@{}/{}".format(
+            conn_data["user"], 
+            conn_data["password"], 
+            conn_data["host"], 
+            conn_data["dbname"])
 
         # Connect to the engine using conn_string 
         engine = create_engine(conn_string)
@@ -129,7 +139,7 @@ class CotsETL():
 
         return new_date
 
-    def cotsTransform(self, df): 
+    def cotsTransformContracts(self, df): 
         """ 
         Function that transforms Cots Contracts data into a more readable data frame. 
         Takes a single argument: 
@@ -440,69 +450,56 @@ class CotsETL():
         columns = ",".join(df_columns)
 
         # Delete all items from the current table
-        delete_stmt = "DELETE FROM public.temp_contracts"
-
-        # Set values and insert statement 
-        values = "VALUES({})".format(",".join(["%s" for _ in df_columns]))
-        insert_stmt = "INSERT INTO public.temp_contracts({}) {}".format(columns, values)
+        delete_stmt = "DELETE FROM {}.{}".format(schema, table)
 
         # Create a cursor and execute the delete and insert statements 
         cur = con.cursor()
         cur.execute(delete_stmt)
-        psycopg2.extras.execute_batch(cur, insert_stmt, df.values)
         con.commit()
 
         """
-        Update euston.contracts with data from temp_contracts. 
+        Converts df into a list of tuples, mogrifies the data and lodas into the selected schema and table. 
         """
         # Update statement 
-        update_stmt = """UPDATE {}.{} 
-                        SET 
-                            contract_id = tc.contract_id 
-                            , bpid = tc.bpid 
-                            , signed_date = tc.signed_date 
-                            , terminated_date = tc.terminated_date 
-                            , duration_years_max = tc.duration_years_max 
-                            , duration_years_base  = tc.duration_years_base
-                            , duration_years_actual = tc.duration_years_actual 
-                            , signing_org = tc.signing_org 
-                            , first_season = tc.first_season 
-                            , last_update = tc.last_update 
-                        FROM 
-                            public.temp_contracts tc
-                        WHERE 
-                            {}.{}.contract_id = tc.contract_id 
-                            and {}.{}.bpid = tc.bpid; 
-                    """.format(schema, table, schema, table, schema, table)
+        clean_list = df.values.tolist()
+        clean_tuples = [tuple(l) for l in clean_list]
+        args_str = ','.join(['%s'] * len(clean_tuples))
+        insert_stmt = """
+            INSERT INTO {}.{}
+                ({})
+            VALUES
+                {}
+        """.format(schema, table, columns, args_str)
+
+        # mogrify data for rapid loading
+        mogrified_data = cur.mogrify(insert_stmt, clean_tuples)
 
         # Execute the update statement
-        cur.execute(update_stmt)
+        cur.execute(mogrified_data)
 
         # Commit and lose connection
         con.commit()
-        cur.close()
+        con.close()
 
-    def cotsLoad(self, df, schema, table):
+    def cotsLoad(self, conn_args, df, schema, table):
         """
         Function that takes a single argument, a data frame, and connects to BP PostgreSQL database
         to load the transformed Cots Contracts data. 
-        Requires the same txt file with the database connection parameters used in cotsExtract(), with the difference
+        Requires the same dictionary with the database connection parameters used in cotsExtract(), with the difference
         that the database is different. 
         """
 
-        # Load txt file with connection strings, create the connection string 
-        f = open("con1_con.txt", "r")
-        ls = [x.strip() for x in f]
+        # Conn dictionary
+        conn_data = conn_args
+        hp = conn_data['host']
+        host, port = hp.split(':') 
 
-        # Connection string requires that the list be in the following order: 
-        # ls[3]: user 
-        # ls[2]: password
-        # ls[1]: hostname 
-        # ls[0]: database 
-        host, port = ls[1].split(':')
-        conn = psycopg2.connect(dbname="cage", user=ls[3], password=ls[2], host=host, port=port, \
-                options = f'-c search_path={schema}',)
+        conn = psycopg2.connect(dbname="cage", \
+                                user=conn_data["user"], \
+                                password=conn_data["password"], \
+                                host=host, \
+                                port=port, \
+                                options = f'-c search_path={schema}',)
 
         CotsETL().batch_load(df, schema, table, conn)
-
         print("Database upload succesful.")

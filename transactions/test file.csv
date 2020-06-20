@@ -1,0 +1,71 @@
+index,bpid,second_id,variable,value,transaction,team_id,first_season,transaction_type,date,transaction_type2
+0,100,0,0,1 year (2012),1 year (2012),,2012.0,,,Signed
+1,100007,0,0,"3 year/$26M (2020-22), plus 2023 club option","3 year/$26M (2020-22), plus 2023 club option",,2020.0,,,Signed
+2480,53004,0,0,4 years/$110M (2017-20),4 years/$110M (2017-20),,2017.0,,,Signed
+3420,67154,0,0,1 year (2019),1 year (2019),,2019.0,,,Signed
+4035,100,0,1,Signed by SEA as a free agent 1/24/12 (minor-league contract),Signed by SEA as a free agent 1/24/12 (minor-league contract),SEA,,Signed,1/24/12,Signed
+4036,100007,0,1,"Signed extension with LAN 2/6/20 (arbitration, $4.675M-$4M)","Signed extension with LAN 2/6/20 (arbitration, $4.675M-$4M)",LAN,,Signed,2/6/20,Signed
+6042,53004,0,1,Re-signed by NYN as a free agent 12/16,Re-signed by NYN as a free agent 12/16,NYN,,Re-signed,12/16,Signed
+6965,67154,0,1,Signed by CLE as a free agent 2/14/19 (minor-league contract),Signed by CLE as a free agent 2/14/19 (minor-league contract),CLE,,Signed,2/14/19,Signed
+8354,67154,0,2,Acquired by BAL in trade from CLE 7/1/19,Acquired by BAL in trade from CLE 7/1/19,BAL,,Acquired,7/1/19,Trade
+8491,100,0,3,Contract purchased by SEA 3/26/12,Contract purchased by SEA 3/26/12,SEA,,Contract purchased,3/26/12,Call-up
+9115,100,0,4,Retired 1/13.,Retired 1/13.,,,Retired,1/13,Retire
+10068,100,1,0, 1 year/$1.5M (2011),1 year/$1.5M (2011),,2011.0,,,Signed
+10069,100007,1,0," 1 year/$575,000 (2019)","1 year/$575,000 (2019)",,2019.0,,,Signed
+12816,53004,1,0, 3 years/$75M (2016-18),3 years/$75M (2016-18),,2016.0,,,Signed
+13785,67154,1,0, 1 year (2018),1 year (2018),,2018.0,,,Signed
+14437,100,1,1,Signed by NYA as a free agent 3/25/11 (minor-league contract),Signed by NYA as a free agent 3/25/11 (minor-league contract),NYA,,Signed,3/25/11,Signed
+14438,100007,1,1,Re-signed by LAN 3/19.,Re-signed by LAN 3/19.,LAN,,Re-signed,3/19,Signed
+16176,53004,1,1,Re-signed by NYN as a free agent 1/26/16,Re-signed by NYN as a free agent 1/26/16,NYN,,Re-signed,1/26/16,Signed
+17024,67154,1,1,Signed by BAL as a free agent 12/17 (minor-league contract),Signed by BAL as a free agent 12/17 (minor-league contract),BAL,,Signed,12/17,Signed
+18365,67154,1,2,Released by BAL 7/18/18,Released by BAL 7/18/18,BAL,,Released,7/18/18,Release
+19064,67154,1,3,Signed by CHA as a free agent 7/25/18 (minor-league contract).,Signed by CHA as a free agent 7/25/18 (minor-league contract).,CHA,,Signed,7/25/18,Signed
+19490,100,1,5,Released by BOS 8/7/11 (exercised opt-out),Released by BOS 8/7/11 (exercised opt-out),BOS,,Released,8/7/11,Release
+19742,100,1,6,Signed by COL as a free agent 8/8/11 (minor-league contract),Signed by COL as a free agent 8/8/11 (minor-league contract),COL,,Signed,8/8/11,Signed
+19915,100,1,7,Contract purchased by COL 8/10/11.,Contract purchased by COL 8/10/11.,COL,,Contract purchased,8/10/11,Call-up
+20223,100,2,0, 5 years/$60M (2006-10),5 years/$60M (2006-10),,2006.0,,,Signed
+20224,100007,2,0, 1 year (2018),1 year (2018),,2018.0,,,Signed
+22714,53004,2,0, 4 years/$36M (2012-15),4 years/$36M (2012-15),,2012.0,,,Signed
+23618,67154,2,0, 1 year (2017),1 year (2017),,2017.0,,,Signed
+24254,100,2,1,Signed by TEX as a free agent 1/06,Signed by TEX as a free agent 1/06,TEX,,Signed,1/06,Signed
+24255,100007,2,1,Re-signed by LAN (minor-league contract),Re-signed by LAN (minor-league contract),LAN,,Re-signed,,Signed
+25789,53004,2,1,Signed by OAK as a free agent from Cuba (via the Dominican Republic) 2/13/12,Signed by OAK as a free agent from Cuba (via the Dominican Republic) 2/13/12,OAK,,Signed,2/13/12,Signed
+26544,67154,2,1,Signed by ARI as a free agent 12/9/16 (minor-league contract),Signed by ARI as a free agent 12/9/16 (minor-league contract),ARI,,Signed,12/9/16,Signed
+27648,67154,2,2,Released by ARI 3/38/17,Released by ARI 3/38/17,ARI,,Released,3/28/17,Release
+28066,53004,2,3,Free agent after 2015 season (club must release Cespedes and may not make a one-year qualifying offer in order to receive draft-pick compensation if he signs elsewhere),2015 season (club must release Cespedes and may not make a one-year qualifying offer in order to receive draft-pick compensation if he signs elsewhere),,,,,Signed
+28172,67154,2,3,Signed by CIN as a free agent 4/20/17 (minor-league contract),Signed by CIN as a free agent 4/20/17 (minor-league contract),CIN,,Signed,4/20/17,Signed
+28589,53004,2,5,Acquired by BOS in trade from OAK 7/31/14 (Lester/Gomes deal),Acquired by BOS in trade from OAK 7/31/14 (Lester/Gomes deal),BOS,,Acquired,7/31/14,Trade
+28624,67154,2,5,Designated for assignment by CIN 6/18/17,Designated for assignment by CIN 6/18/17,CIN,,,6/18/17,Signed
+28738,100,2,7,Acquired by BAL in trade from TEX 12/9/09,Acquired by BAL in trade from TEX 12/9/09,BAL,,Acquired,12/9/09,Trade
+28814,53004,2,8,Acquired by DET in trade from BOS 12/11/14,Acquired by DET in trade from BOS 12/11/14,DET,,Acquired,12/11/14,Trade
+28836,53004,2,9,"Acquired by NYN in trade from DET 7/31/15 with $3,729,508 remaining on contract for 2015","Acquired by NYN in trade from DET 7/31/15 with $3,729,508 remaining on contract for 2015",NYN,,Acquired,7/31/15,Trade
+28870,100,3,0, 1 year/$7M (2005),1 year/$7M (2005),,2005.0,,,Signed
+31814,67154,3,0, 1 year (2016),1 year (2016),,2016.0,,,Signed
+32380,100,3,1,Signed by CLE as a free agent 1/05,Signed by CLE as a free agent 1/05,CLE,,Signed,1/05,Signed
+32381,100007,3,1,Designated for assignment by OAK 1/3/17,Designated for assignment by OAK 1/3/17,OAK,,,1/3/17,Signed
+34450,67154,3,1,Re-signed by HOU 3/16,Re-signed by HOU 3/16,HOU,,Re-signed,3/16,Signed
+35483,100007,3,3,Signed by LAN as a free agent 4/28/17 (minor-league contract).,Signed by LAN as a free agent 4/28/17 (minor-league contract).,LAN,,Signed,4/28/17,Signed
+35769,67154,3,3,Designated for assignment by MIA 7/16/16,Designated for assignment by MIA 7/16/16,MIA,,,7/16/16,Signed
+36172,100,4,0, 1 year/$11M (2004),1 year/$11M (2004),,2004.0,,,Signed
+36173,100007,4,0, 1 year (2016),1 year (2016),,2016.0,,,Signed
+38751,67154,4,0, 1 year/$0.5075M (2015),1 year/$0.5075M (2015),,2015.0,,,Signed
+39240,100,4,1,Re-signed by PHI as a free agent 2/04.,Re-signed by PHI as a free agent 2/04.,PHI,,Re-signed,2/04,Signed
+39241,100007,4,1,Re-signed by OAK 3/16.,Re-signed by OAK 3/16.,OAK,,Re-signed,3/16,Signed
+41024,67154,4,1,Re-signed by HOU 3/15.,Re-signed by HOU 3/15.,HOU,,Re-signed,3/15,Signed
+42325,100,5,0, 1 year/$9.9M (2003),1 year/$9.9M (2003),,2003.0,,,Signed
+42326,100007,5,0, 1 year (2015),1 year (2015),,2015.0,,,Signed
+44557,67154,5,0, 1 year/$0.5M (2014),1 year/$0.5M (2014),,2014.0,,,Signed
+44927,100,5,1,Acquired by PHI in trade from ATL 12/02,Acquired by PHI in trade from ATL 12/02,PHI,,Acquired,12/02,Trade
+46571,100,5,2,Re-signed by PHI 1/03.,Re-signed by PHI 1/03.,PHI,,Re-signed,1/03,Signed
+47002,67154,5,2,Re-signed by HOU 3/6/14.,Re-signed by HOU 3/6/14.,HOU,,Re-signed,3/6/14,Signed
+47338,100,6,0, 1 year/$3.9M (2002),1 year/$3.9M (2002),,2002.0,,,Signed
+47339,100007,6,0, Drafted by OAK 2012 (5-169) (Baylor),Drafted by OAK 2012 (5-169) (Baylor),OAK,,Drafted,,Draft
+49444,100,6,1,Re-signed by ATL 1/02 (avoided arbitration).,Re-signed by ATL 1/02 (avoided arbitration).,ATL,,Re-signed,1/02,Signed
+50658,67154,6,1,Acquired by HOU in trade from TOR 7/20/12.,Acquired by HOU in trade from TOR 7/20/12.,HOU,,Acquired,7/20/12,Trade
+51286,100,7,0, 1 year/$3.1M (2001),1 year/$3.1M (2001),,2001.0,,,Signed
+52780,67154,7,0, Drafted by TOR 2010 (1s-41) (The Citadel),Drafted by TOR 2010 (1s-41) (The Citadel),TOR,,Drafted,,Draft
+54321,100,8,0, 1 year/$0.42M (2000).,1 year/$0.42M (2000).,,2000.0,,,Signed
+56480,100,9,0, 1 year/$0.23M (1999).,1 year/$0.23M (1999).,,1999.0,,,Signed
+57916,100,10,0, 1 year/$0.175M (1998).,1 year/$0.175M (1998).,,1998.0,,,Signed
+58819,100,11,0, 1 year/$0.15M (1997).,1 year/$0.15M (1997).,,1997.0,,,Signed
+59313,100,12,0," Drafted by ATL 1993 (11-320) (Bessemer City HS, NC).","Drafted by ATL 1993 (11-320) (Bessemer City HS, NC).",ATL,,Drafted,,Draft
