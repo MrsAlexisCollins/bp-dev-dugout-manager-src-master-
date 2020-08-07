@@ -437,6 +437,16 @@ class Mlb_people_transactions(Base):
 		return "{}({!r})".format(self.__class__.__name__, self.__dict__)
 
 
+class Mlb_plays(Base):
+	__tablename__ = 'plays'
+	__table_args__ = {'schema': 'mlbapi'}
+	game_pk = Column(Integer, primary_key = True)
+	at_bat_index = Column(Integer, primary_key = True)
+	inning = Column(Integer)
+	def __repr__(self):
+		return "{}({!r})".format(self.__class__.__name__, self.__dict__)
+
+
 class Mlb_teams(Base):
 	__tablename__ = 'teams'
 	__table_args__ = {'schema': 'mlbapi'}
@@ -1045,3 +1055,38 @@ class Pecota_ref_pitcher_league_pos(Base):
 	def __repr__(self):
 		return "{}({!r})".format(self.__class__.__name__, self.__dict__)
 
+class Mlb_schedule(Base):
+	__tablename__ = 'games_schedule'
+	__table_args__ = {'schema': 'mlbapi'}
+	
+	game_pk = Column(Integer, primary_key = True)
+	game_type = Column(String)
+	season = Column(Integer)
+	game_date = Column(DateTime)
+	reschedule_date = Column(DateTime) 
+	status_code = Column(String)
+	away_team = Column(Integer)
+	away_score = Column(Integer)
+	home_team = Column(Integer)
+	home_score = Column(Integer)
+	game_number = Column(Integer)
+	scheduled_innings = Column(Integer)
+
+	double_header = Column(String)
+	level_id = Column(Integer)
+	calendar_event_id = Column(String, primary_key = True)
+
+	def __repr__(self):
+		return "{}({!r})".format(self.__class__.__name__, self.__dict__)
+
+class xref_teams(Base):
+	__tablename__ = 'teams_refs'
+	__table_args__ = {'schema': 'xrefs'}
+	
+	teams_ref_id = Column(Integer, primary_key = True)
+	teams_id = Column(Integer)
+	xref_type = Column(String)
+	xref_id = Column(Integer)
+
+	def __repr__(self):
+		return "{}({!r})".format(self.__class__.__name__, self.__dict__)

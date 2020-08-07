@@ -1072,6 +1072,59 @@ class Pecota_bpf(Base):
 		return "{}({!r})".format(self.__class__.__name__, self.__dict__)
 
 
+
+class schedule(Base):
+	__tablename__ = 'schedule'
+	__table_args__ = ({'schema': 'entitas'})
+
+	game_pk = Column(Integer, primary_key = True)
+	game_type = Column(String)
+	season = Column(Integer)
+	home_team = Column(Integer, ForeignKey('entitas.teams.team_id'))
+	away_team = Column(Integer, ForeignKey('entitas.teams.team_id'))
+	game_date = Column(DateTime)
+	game_date1 = Column(DateTime)
+	game_date2 = Column(DateTime)
+	game_number = Column(Integer)
+	scheduled_innings = Column(Integer)
+	innings_played = Column(Integer)
+	status_code = Column(String)
+	home_score = Column(Integer)
+	away_score = Column(Integer)
+
+	def __repr__(self):
+		return "{}({!r})".format(self.__class__.__name__, self.__dict__)
+
+class schedule_team(Base):
+	__tablename__ = 'schedule_team'
+	__table_args__ = ({'schema': 'entitas'})
+
+	game_pk = Column(Integer, ForeignKey('entitas.schedule.game_pk'), primary_key = True)
+	team_id = Column(Integer, ForeignKey('entitas.teams.team_id'), primary_key = True)
+	game_type = Column(String)
+	season = Column(Integer)
+	opp_team_id = Column(Integer, ForeignKey('entitas.teams.team_id'))
+	home_away = Column(String)
+	game_date = Column(DateTime)
+	game_date1 = Column(DateTime)
+	game_date2 = Column(DateTime)
+	game_number = Column(Integer)
+	scheduled_innings = Column(Integer)
+	innings_played = Column(Integer)
+	status_code = Column(String)
+	score = Column(Integer)
+	opp_score = Column(Integer)
+	season_number = Column(Integer)
+	games_remaining = Column(Integer)
+	wins = Column(Integer)
+	losses = Column(Integer)
+	rs = Column(Integer)
+	ra = Column(Integer)
+
+	def __repr__(self):
+		return "{}({!r})".format(self.__class__.__name__, self.__dict__)
+
+
 #### legacy stats
 
 class Stats_legacy_batting_daily(Base):
