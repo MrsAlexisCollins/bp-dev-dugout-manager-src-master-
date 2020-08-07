@@ -272,3 +272,49 @@ CREATE TABLE entitas.team_rosters (
 	CONSTRAINT team_rosters_player_fkey FOREIGN KEY (player) REFERENCES entitas.people(bpid) ON DELETE RESTRICT,
 	CONSTRAINT team_rosters_team_fkey FOREIGN KEY (team) REFERENCES entitas.teams(team_id) ON DELETE RESTRICT
 );
+
+
+create table entitas.schedule (
+	game_pk int not null
+	, game_type char(1) not null
+	, season int not null
+	, home_team int not null
+	, away_team int not null
+	, game_date timestamp not null
+	, game_date1 timestamp, game_date2 timestamp
+	, game_number int
+	, scheduled_innings int
+	, innings_played int
+	, status_code char(2)
+	, home_score int
+	, away_score int
+	, constraint schedule_pkey primary key (game_pk)
+	, constraint schedule_home_team_fkey foreign key (home_team) references entitas.teams(team_id)
+	, constraint schedule_away_team_fkey foreign key (away_team) references entitas.teams(team_id)
+);
+
+create table entitas.schedule_team (
+	game_pk int not null
+	, team_id int not null
+	, game_type char(1) not null
+	, season int not null
+	, opp_team_id int not null
+	, home_away char(4) not null
+	, game_date timestamp not null
+	, game_date1 timestamp, game_date2 timestamp
+	, game_number int
+	, scheduled_innings int
+	, innings_played int
+	, status_code char(2)
+	, score int, opp_score int
+	, season_number int
+	, games_remaining int
+	, wins int
+	, losses int
+	, rs int
+	, ra int
+	, constraint schedule_team_pkey primary key (game_pk, team_id)
+	, constraint schedule_team_game_fkey foreign key (game_pk) references entitas.schedule(game_pk)
+	, constraint schedule_team_team_fkey foreign key (team_id) references entitas.teams(team_id)
+	, constraint schedule_team_opp_team_fkey foreign key (opp_team_id) references entitas.teams(team_id)
+);
