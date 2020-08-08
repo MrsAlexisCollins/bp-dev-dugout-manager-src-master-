@@ -146,47 +146,35 @@ for row in schedule_read_away:
 
 # sort
 new_entries = sorted(new_entries, key = lambda i: (i['team_id'], i['game_date1']))
-
-# calc running totals with pandas
 df = pd.DataFrame(new_entries)
-
 # were problematic game_pks
 #df = df[~df['game_pk'].isin([630918,631129,631340,631471])]
-
-df['game_date'] = df["game_date2"].fillna(df["game_date1"])
-df['season_number'] = df[df.status_code.astype(str).str[0] == "F"].groupby(['team_id'])['game_date1'].rank(ascending=True)
-
-# calc running totals
-df['total_games'] = df.groupby('team_id')['team_id'].transform('count')
-df['games_remaining'] = df['total_games'] - df['season_number']
-
-df['rs'] = df.groupby('team_id')['score'].transform(pd.Series.cumsum)
-df['ra'] = df.groupby('team_id')['opp_score'].transform(pd.Series.cumsum)
-df['wins'] = df.groupby('team_id')['win'].transform(pd.Series.cumsum)
-df['losses'] = df['season_number'] - df['wins']
-
 ## count duplicates 
 df['dupl'] = df.groupby(['game_pk','team_id'])['game_pk'].transform('size')
-
 # FOR COMPLETED GAMES: if we have a duplicate with one status_code being F, dump the other one
 # check if a final status exists. a bit dangerous? maybe also group by team_id
 df.loc[df['game_pk'].isin(df.loc[df['status_code'].astype(str).str[0] == "F", 'game_pk'].values), 'has_f'] = 1
 df['has_f'] = df['has_f'].fillna(0)
-
 # delete dupl rows that have final in a game_pk and are not status code final
 # 631339,630495,630575,630496,630591,631469,631567,631127,631219,631220
 df.drop(df[(df['dupl'] == 2) & (df['has_f'] == 1) & (df['status_code'].astype(str).str[0] != 'F')].index, inplace=True)
-
 # FOR SCHEDULED GAMES: if we have a duplicate with one postponement and another scheduled game, dump the postponed game 
 df.loc[df['game_pk'].isin(df.loc[df['status_code'] == "S", 'game_pk'].values), 'has_s'] = 1
 df['has_s'] = df['has_s'].fillna(0)
 # TODO: transfer the original schedule date into date1 and move the reschedule date into date2
 df.drop(df[(df['dupl'] == 2) & (df['has_s'] == 1) & (df['status_code'] != 'S')].index, inplace=True)
-
-
+# calc running totals with pandas
+df['game_date'] = df['game_date2'].fillna(df['game_date1'])
+df['season_number'] = df[df.status_code.astype(str).str[0] == "F"].groupby(['team_id'])['game_date1'].rank(ascending=True)
+# calc running totals
+df['total_games'] = df.groupby('team_id')['team_id'].transform('count')
+df['games_remaining'] = df['total_games'] - df['season_number']
+df['rs'] = df.groupby('team_id')['score'].transform(pd.Series.cumsum)
+df['ra'] = df.groupby('team_id')['opp_score'].transform(pd.Series.cumsum)
+df['wins'] = df.groupby('team_id')['win'].transform(pd.Series.cumsum)
+df['losses'] = df['season_number'] - df['wins']
 ## map BP team ID
 bp_teams = pd.DataFrame(bp_team_id)
-
 # pd.set_option('display.max_rows', None)
 # pd.set_option('display.max_columns', None)
 # pd.set_option('display.width', None)
@@ -220,7 +208,7 @@ def agg_home_away(x):	# https://stackoverflow.com/a/47103408
     d['away_score'] = x.loc[x['home_away'] == "away"]['score'].max()
     return pd.Series(d, index=['home_team', 'away_team', 'home_score', 'away_score'])
 
-df_single = df.groupby(['game_pk', 'game_type', 'season', 'game_date', 'game_date1', 'game_date2', 'game_number', 'scheduled_innings', 'innings_played', 'status_code'], as_index=False ).apply(agg_home_away)
+df_single = df.groupby(['game_pk', 'game_type', 'season', 'game_date', 'game_date1', 'game_date2', 'game_number', 'scheduled_innings', 'innings_played', 'status_code'], as_index=False, dropna=False).apply(agg_home_away)
 
 ## look at csv outputs
 df.to_csv('out.csv', index=False)
@@ -245,6 +233,11 @@ df_list_single = df_single.to_dict('records')
 df_list = sorted(df_list, key = lambda i: (i['game_date'], i['game_pk'], i['home_away']))
 df_list_single = sorted(df_list_single, key = lambda i: (i['game_date']))
 
+
+#clear teams first
+schedule_team_write = session_write.query(schedule_team) 
+schedule_team_write.delete() 
+
 # write plain schedule first
 schedule_write = session_write.query(schedule) 
 schedule_write.delete() 
@@ -255,8 +248,6 @@ for new_entry in df_list_single:
 
 
 # write schedule per team (has FK to schedule)
-schedule_team_write = session_write.query(schedule_team) 
-schedule_team_write.delete() 
 
 for new_entry in df_list:
 	new_row = schedule_team(**new_entry)
