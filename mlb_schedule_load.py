@@ -1,6 +1,6 @@
 
 from dugout_manager.connectors.write import session_write
-from dugout_manager.connectors.ondeck import session_ondeck
+from dugout_manager.connectors.read import session_read
 from dugout_manager.cage_models import Mlb_schedule, xref_teams, Mlb_plays
 from dugout_manager.dugout_models import schedule, schedule_team
 from sqlalchemy import func
@@ -9,7 +9,7 @@ import pandas as pd
 from numpy import nan
 
 ### read in home games
-schedule_read_home = session_ondeck.query(
+schedule_read_home = session_read.query(
 
 	Mlb_schedule.game_pk, Mlb_schedule.game_type, Mlb_schedule.season
 	, Mlb_schedule.home_team.label("team_id")
@@ -43,7 +43,7 @@ schedule_read_home = session_ondeck.query(
 	, Mlb_schedule.status_code).all()
 
 # away games
-schedule_read_away = session_ondeck.query(
+schedule_read_away = session_read.query(
 
 	Mlb_schedule.game_pk, Mlb_schedule.game_type, Mlb_schedule.season
 	, Mlb_schedule.away_team.label("team_id")
@@ -77,9 +77,9 @@ schedule_read_away = session_ondeck.query(
 
 # print(schedule_read_home)
 
-bp_team_id = session_ondeck.query(xref_teams.teams_id, xref_teams.xref_id).filter(xref_teams.xref_type == 'mlbam').all()
+bp_team_id = session_read.query(xref_teams.teams_id, xref_teams.xref_id).filter(xref_teams.xref_type == 'mlbam').all()
 
-actual_innings = session_ondeck.query(Mlb_plays.game_pk, func.max(Mlb_plays.inning).label("innings_played")).group_by(Mlb_plays.game_pk).all()
+actual_innings = session_read.query(Mlb_plays.game_pk, func.max(Mlb_plays.inning).label("innings_played")).group_by(Mlb_plays.game_pk).all()
 
 new_entries = []
 
@@ -220,7 +220,7 @@ def agg_home_away(x):	# https://stackoverflow.com/a/47103408
     d['away_score'] = x.loc[x['home_away'] == "away"]['score'].max()
     return pd.Series(d, index=['home_team', 'away_team', 'home_score', 'away_score'])
 
-df_single = df.groupby(['game_pk', 'game_type', 'season', 'game_date', 'game_date1', 'game_date2', 'game_number', 'scheduled_innings', 'innings_played', 'status_code'], as_index=False, dropna=False).apply(agg_home_away)
+df_single = df.groupby(['game_pk', 'game_type', 'season', 'game_date', 'game_date1', 'game_date2', 'game_number', 'scheduled_innings', 'innings_played', 'status_code'], as_index=False ).apply(agg_home_away)
 
 ## look at csv outputs
 df.to_csv('out.csv', index=False)
