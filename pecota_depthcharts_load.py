@@ -28,8 +28,7 @@ for row in dc_batters:
 	new_entry['pt_lf'] =  row.pt_lf
 	new_entry['pt_cf'] =  row.pt_cf
 	new_entry['pt_rf'] =  row.pt_rf
-	new_entry['pt_dh'] =  row.pt_dh
-	new_entry['pt_ph'] =  row.pt_ph
+	new_entry['pt_dh'] =  row.pt_dh 
 	new_entries.append(new_entry)
 
 

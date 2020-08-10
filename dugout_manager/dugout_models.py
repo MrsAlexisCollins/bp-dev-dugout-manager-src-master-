@@ -655,7 +655,6 @@ class Bp_pecota_depthcharts_batters(Base):
 	pt_cf = Column(Integer)
 	pt_rf = Column(Integer)
 	pt_dh = Column(Integer)
-	pt_ph = Column(Integer)
 
 	
 	def __repr__(self):
