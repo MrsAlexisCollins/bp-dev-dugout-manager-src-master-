@@ -162,7 +162,7 @@ df.drop(df[(df['dupl'] == 2) & (df['has_f'] == 1) & (df['status_code'].astype(st
 df.loc[df['game_pk'].isin(df.loc[df['status_code'] == "S", 'game_pk'].values), 'has_s'] = 1
 df['has_s'] = df['has_s'].fillna(0)
 # TODO: transfer the original schedule date into date1 and move the reschedule date into date2
-df.drop(df[(df['dupl'] == 2) & (df['has_s'] == 1) & (df['status_code'] != 'S')].index, inplace=True)
+df.drop(df[(df['dupl'] > 1) & (df['has_s'] == 1) & (df['status_code'] != 'S')].index, inplace=True)
 # calc running totals with pandas
 df['game_date'] = df['game_date2'].fillna(df['game_date1'])
 df['season_number'] = df[df.status_code.astype(str).str[0] == "F"].groupby(['team_id'])['game_date1'].rank(ascending=True)
@@ -246,6 +246,7 @@ for new_entry in df_list_single:
 	new_row = schedule(**new_entry)
 	session_write.add(new_row)
 
+session_write.commit()
 
 # write schedule per team (has FK to schedule)
 
