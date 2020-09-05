@@ -157,7 +157,7 @@ df.loc[df['game_pk'].isin(df.loc[df['status_code'].astype(str).str[0] == "F", 'g
 df['has_f'] = df['has_f'].fillna(0)
 # delete dupl rows that have final in a game_pk and are not status code final
 # 631339,630495,630575,630496,630591,631469,631567,631127,631219,631220
-df.drop(df[(df['dupl'] == 2) & (df['has_f'] == 1) & (df['status_code'].astype(str).str[0] != 'F')].index, inplace=True)
+df.drop(df[(df['dupl'] > 1) & (df['has_f'] == 1) & (df['status_code'].astype(str).str[0] != 'F')].index, inplace=True)
 # FOR SCHEDULED GAMES: if we have a duplicate with one postponement and another scheduled game, dump the postponed game 
 df.loc[df['game_pk'].isin(df.loc[df['status_code'] == "S", 'game_pk'].values), 'has_s'] = 1
 df['has_s'] = df['has_s'].fillna(0)
