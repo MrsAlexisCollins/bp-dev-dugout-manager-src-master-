@@ -1,0 +1,8 @@
+{
+    "cage": {
+        "host":     "172.104.15.153",
+        "username": "",
+        "password": "",
+        "database": "cage"
+    }
+}

@@ -1,0 +1,57 @@
+dyna_fielder_pos_team_year.sql
+
+- bp_stats.dyna_batter_team_year gets FRAA by summing over positions in
+  bp_stats.dyna_fielder_pos_team_year
+- bp_stats.dyna_fielder_pos_team_year gets FRAA from
+  tech_rmcquown.fraa_by_pos_TEMPDELETE0 and brr_arm from
+  baserunning.brr_season_arm
+
+fraa_by_pos.sql
+
+- tech_rmcquown.fraa_by_pos_TEMPDELETE0 also gets brr_arm from
+  baserunning.brr_season_arm
+- OF assists come from fact_field3.outfield_assists
+
+baserunning.sql
+
+- baserunning.brr_season_arm sums RE diffs over many different kinds of
+  events to produce BRR_ARM and its components from
+  baserunning.baserunner_runs_raw; there are many other aggregations
+- 141 lines of SQL produce baserunning.baserunner_runs_raw from
+  warehouse.events, lwts.re_diff_run, and baserunning.run{1,2,3}_avg_re. It
+  is a union of three selects, which cover runner on first only or runners on
+  the corners for SB/CS; runner on second with no runner on third; and runner
+  on third,  The basic idea is to compare the start and end RE for each
+  runner, take the difference, sum over all runners (there are some
+  contortions here to handle trail runners iteratively), and compare against
+  the average RE for the situation from the _avg_re tables; the difference is
+  the RE_DIFF used above.
+- baserunning.run{1,2,3}_avg_re use warehouse.events and lwts.re_diff_run in
+  a fairly similar fashion, just with averages. (I am handwaving over a lot
+  of detail.)
+
+re.sql
+
+- lwts.re_diff_run is a cousin of lwts.re_diff. It uses
+  lwts.batter_runner_runs_complete and lwts.trans_rates_run to produce for
+  each pair of (start out, end out) start and end REs for runners at any base
+  (including the batter-runner).
+- lwts.trans_rates_run is just a count of all of the transitions from start
+  out to end out for all of the possible pairs (e.g. how many times did an
+  event take us from 0 outs to 3 outs).
+- lwts.batter_runner_runs_complete calculates the raw REs for any number of
+  outs and a runner standing at any base. It uses warehouse.events and
+  lwts.complete_innings.
+
+(From Sean)
+complete_innings:
+
+select distinct gs.season, gs.level_id, 
+                         p.game_pk, p.inning, p.half_inning 
+                    from cage.mlbapi.plays p 
+                    inner join cage.mlbapi.games_schedule gs using (game_pk)
+                    where 
+                        p.outs = 3
+                        and 
+                        (p.inning < 9 or p.half_inning = 'top')
+
