@@ -164,9 +164,6 @@ for season in teams:
         buffer.write("|".join([str(x) for x in 
             (season, level, rep_pct, vs_reference, off_warp_pct)]))
         buffer.write("\n")
-        if season > 2018 and level == 1:
-            print(f"{season} {level}: ")
-            print(f"  {rpg} {babip} {w_sd} {rspg_sd} {rapg_sd} {fld_sd} {rapg_fair_sd} {bip} {babip_sd} {rep_rspg} {rep_rapg} {pythex}")
         
 cage_cur.execute("TRUNCATE legacy_models.warp_sd_raw")
 buffer.seek(0)

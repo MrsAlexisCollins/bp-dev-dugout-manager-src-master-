@@ -1,5 +1,6 @@
 create table if not exists models.dra_warp (
 	season			int,
+	level_id		int,
 	comp_date		int,
 	bpid			float8,
 	dra_final		float8,
@@ -12,9 +13,14 @@ create table if not exists models.dra_warp (
 	primary key (season, comp_date, bpid)	
 );
 
+delete from models.dra_warp where comp_date in (
+    select max(comp_date) from models.dra_daily
+); 
+
 insert into models.dra_warp
 select 
 	year as season
+    , level_id
 	, comp_date, bpid
 	--, full_name
 	, "DRA_final" as dra_final
@@ -37,4 +43,5 @@ join (
 --join mlbapi.people_search ps using (bpid)
 ;
 
-grant select on models.dra_pwarp to PUBLIC;
+grant select on models.dra_warp to PUBLIC;
+grant all privileges on models.dra_warp to models;
