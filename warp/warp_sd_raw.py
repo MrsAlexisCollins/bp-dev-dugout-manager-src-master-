@@ -12,10 +12,10 @@ with open("creds.json", "r") as fd:
     creds = json.load(fd)
 
 try:
-    cage = psycopg2.connect(dbname = creds['cage']['database'],
-        user =     creds['cage']['username'],
-        password = creds['cage']['password'],
-        host =     creds['cage']['host'])
+    cage = psycopg2.connect(dbname = "cage",
+        user =     creds['pg']['username'],
+        password = creds['pg']['password'],
+        host =     creds['pg']['host'])
 except psycopg2.Error as err:
     print(e.pgerror)
     sys.exit(1)
