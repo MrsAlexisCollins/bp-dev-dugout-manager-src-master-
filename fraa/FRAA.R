@@ -886,8 +886,8 @@ data_fld_year_pm_reg <- data_fld_year_pm %>%
   add_column(version = max_date) %>%
   select(season, level_id, team_id, bpid, pos, chances, plays_made, avg_plays_made, paa, moe_pm, paa_reg, raa, moe_runs, raa_reg, version)
 
-dbSendQuery(cage, paste0("DELETE FROM models.fraa_daily WHERE version = '", max_date, "'", sep=""))
-dbWriteTable(cage, "fraa_daily", data_fld_year_pm_reg, row.names=FALSE, append=TRUE)
+#dbSendQuery(cage, paste0("DELETE FROM models.fraa_daily WHERE version = '", max_date, "'", sep=""))
+#dbWriteTable(cage, "fraa_daily", data_fld_year_pm_reg, row.names=FALSE, append=TRUE)
 
 #query_FYPMR_SQL <- paste("SELECT * FROM fact_field3.fld_year_pm_reg WHERE lvl = \'mlb\' AND year_id =", season, sep = " ")
 #data_FYPMR_SQL <- dbGetQuery(mysql, query_FYPMR_SQL)  
@@ -958,5 +958,5 @@ pos_games_crosstab_official.query <- paste("SELECT season, level_id, player_id A
 pos_games_crosstab_official.data <- dbGetQuery(cage, pos_games_crosstab_official.query) %>% 
   dplyr::rename(fld_id = mlbid, fld_team = team_id)
 
-save(pos_games.data.long, file="FRAA.RData")
+save(pos_games.data.long, teams_xrefs, people_xrefs, max_date, file="FRAA.RData")
 # Tra la, all's done! 
