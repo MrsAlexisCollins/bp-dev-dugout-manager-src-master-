@@ -232,7 +232,7 @@ dbWriteTable(cage, "ofa_daily", outfield_assists.norm.yr_lvl_team_player, row.na
 outfield_assists.norm.yr_lvl_team_player_pos <- outfield_assists.norm.data %>% 
   group_by(season, level_id, fld_team, fld_id, pos) %>%
   summarize(of_ast = sum(coalesce(off_ass,0)),
-            of_ast_fraa = sum(coalesce(run_diff_vs_expected,0)) - sum(coalesce(G,0)*lg_FRAA_PER_G)
+            of_ast_fraa = sum(coalesce(run_diff_vs_expected,0)) - sum(coalesce(G,0)*lg_FRAA_PER_G))
 
 save(pos_games.data.long, max_date, teams_xrefs, people_xrefs,
   outfield_assists.norm.yr_lvl_team_player,
