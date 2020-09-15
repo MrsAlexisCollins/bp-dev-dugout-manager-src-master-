@@ -39,7 +39,7 @@ def nested_dict(n, type):
 cage_cur = cage.cursor()
 dugout_cur = dugout.cursor()
 
-rpa_plus = {}
+drc_pos = nested_dict(2, dict)
 r_pa = nested_dict(1, dict)
 rpw = nested_dict(1, dict)
 pos_adj_lookup = nested_dict(2, dict)
@@ -53,19 +53,20 @@ rep_level = nested_dict(3, float)
 drc_warp = nested_dict(3, float)
 
 query = """
-SELECT f.pos,
-    sum((f.pa_rt * t.pa_expected::numeric)::double precision * (t.draa_pa + 0.12::double precision) / 0.12::double precision) / sum(f.pa_rt * t.pa_expected::numeric)::double precision AS rpa_plus
-   FROM stats.pecota_batting_lines_park_adj t,
-    stats.bp_pecota2020__projected_fielder_position f
-  WHERE t.bpid = f.fld_id AND t.season = f.year_proj and t.decile = 50
-  GROUP BY f.pos
+SELECT DISTINCT ON (year, lvl, pos) year, lvl, pos, drc_plus
+FROM models.drc_daily_pos
+ORDER BY year, lvl, pos, comp_date DESC;
 """
-dugout_cur.execute(query)
-for row in dugout_cur:
-    pos, value = row
-    rpa_plus[pos] = value
-rpa_plus[11] = 1
-rpa_plus[1] = 0
+cage_cur.execute(query)
+for row in cage_cur:
+    season, lvl, pos, value = row
+
+    # hack
+    season = int(season)
+    if lvl == 'mlb':
+        level_id = 1
+
+    drc_pos[season][level_id][pos] = value
 
 query = """
 SELECT season, level_id, avg(rpw) AS rpw
@@ -118,17 +119,13 @@ for row in cage_cur:
     season, level_id, value = row
     r_pa[season][level_id] = value
 
-for pos in rpa_plus:
-    rpa_plus_pos = rpa_plus[pos]
-    for season in r_pa:
-        for level_id in r_pa[season]:
-            if pos == 1:
-                pos_adj_lookup[season][level_id][pos] = 0
-                rep_level_lookup[season][level_id][pos] = 0
-            else:
-                r = r_pa[season][level_id]
-                pos_adj_lookup[season][level_id][pos] = r - (r*rpa_plus_pos)
-                rep_level_lookup[season][level_id][pos] = r - (r*0.76)
+for season in drc_pos:
+    for level_id in drc_pos[season]:
+        for pos in drc_pos[season][level_id]:
+            pos_factor = drc_pos[season][level_id][pos] / 100.0
+            r = r_pa[season][level_id]
+            pos_adj_lookup[season][level_id][pos] = r - (r*pos_factor)
+            rep_level_lookup[season][level_id][pos] = r - (r*0.76)
 
 query = """
 SELECT gs.season, gs.level_id, x.bpid, pos, count(*)
@@ -141,6 +138,8 @@ GROUP BY gs.season, gs.level_id, x.bpid, pos
 cage_cur.execute(query)
 for row in cage_cur:
     season, level_id, bpid, pos, value = row
+    if season not in drc_warp:
+        continue
 
     try:
         raw_pos = value * pos_adj_lookup[season][level_id][pos]
