@@ -21,7 +21,7 @@ insert into models.dra_warp
 select 
 	year as season
     , level_id
-	, comp_date, bpid
+	, comp_date, bpid::INT
 	--, full_name
 	, "DRA_final" as dra_final
 	--, "DRA_SD"
