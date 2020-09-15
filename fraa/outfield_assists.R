@@ -198,18 +198,24 @@ outfield_assists.yr_lvl_team_player <- outfield_assists.data %>%
 # Now, assuming we've run FRAA_pg.R or otherwise obtained a crosstab of games played:
 # Let's join to that long table, since the values match with the official DB,
 # and then calculate the relevant league/season-level FRAA/Game
+# The full join ensures that all fielders are joined in, even ones who have
+# not made an assist. Outfielders are selected via the filter.
+# The `coalesce` is used similar to the legacy code, ensuring outfielders with 
+# `NA` (i.e. none) outfield assists (and thus no run expectancy) are appropriately counted.
 outfield_assists.norm.data <-outfield_assists.data %>% 
-  left_join(pos_games.data.long %>% mutate(pos_num = as.character(pos_num)) , 
+  full_join(pos_games.data.long %>% mutate(pos_num = as.character(pos_num)) , 
              by = c("season", "level_id", "fld_team", "fld_id", "pos" = "pos_num")) %>%
+  filter(pos %in% c(7,8,9)) %>%
   group_by(season, level_id) %>%
-  mutate(lg_FRAA_PER_G = sum(run_diff_vs_expected)/sum(G)) %>% ungroup()
+  mutate(lg_FRAA_PER_G = sum(coalesce(run_diff_vs_expected,0))/sum(coalesce(G,0))) %>% ungroup()
 
-# This is the normalized version of the above process. -- why is it doubling rows?
+# This is the normalized version of the above process.
 # This provides the of_ast_fraa in the dyna tables.
+# Coalesce is used here as well. 
 outfield_assists.norm.yr_lvl_team_player <- outfield_assists.norm.data %>%
   group_by(season, level_id, fld_team, fld_id) %>%
-  summarize(of_ast = sum(off_ass),
-            of_ast_fraa = sum(run_diff_vs_expected) - sum(lg_FRAA_PER_G*G)) %>%
+  summarize(of_ast = sum(coalesce(off_ass,0)),
+            of_ast_fraa = sum(coalesce(run_diff_vs_expected,0)) - sum(coalesce(G,0)*lg_FRAA_PER_G)) %>%
   ungroup() %>%
   inner_join(teams_xrefs, by = c("fld_team" = "xref_id")) %>%
   inner_join(people_xrefs, by = c("fld_id" = "xref_id")) %>%
@@ -221,10 +227,12 @@ dbSendQuery(cage, paste0("DELETE FROM models.ofa_daily WHERE version = '", max_d
 dbWriteTable(cage, "ofa_daily", outfield_assists.norm.yr_lvl_team_player, row.names=FALSE, append=TRUE)
 
 # This last table is lines 22 to 25 of the TEMP_DELETE0 table creation in
-# fraa_by_pos.sql
+# fraa_by_pos.sql. As noted, one more use of coalesce. 
+
 outfield_assists.norm.yr_lvl_team_player_pos <- outfield_assists.norm.data %>% 
   group_by(season, level_id, fld_team, fld_id, pos) %>%
-  summarize(of_ast_fraa_pos = run_diff_vs_expected - G*lg_FRAA_PER_G)
+  summarize(of_ast = sum(coalesce(off_ass,0)),
+            of_ast_fraa = sum(coalesce(run_diff_vs_expected,0)) - sum(coalesce(G,0)*lg_FRAA_PER_G))
 
 save(pos_games.data.long, max_date, teams_xrefs, people_xrefs,
   outfield_assists.norm.yr_lvl_team_player,
