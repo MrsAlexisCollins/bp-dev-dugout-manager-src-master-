@@ -93,7 +93,16 @@ select distinct
 	, bo.outs_end - bo.outs_pre as event_outs_ct
 	, case p.event_type when 'single' then 1 when 'double' then 2 when 'triple' then 3 when 'home_run' then 4 else 0 end as h_cd
 	, case when description like '%bunt%' then 1 else 0 end as bunt_fl
-	, case trajectory when 'fly_ball' then 'F' when 'ground_ball' then 'G' when 'popup' then 'P' when 'line_drive' then 'L' else null end as battedball_cd
+	, case trajectory 
+        when 'fly_ball' then 'F' 
+        when 'ground_ball' then 'G' 
+        when 'bunt_grounder' then 'G' 
+        when 'popup' then 'P' 
+        when 'bunt_popup' then 'P' 
+        when 'line_drive' then 'L' 
+        when 'bunt_line_drive' then 'L' 
+        else null 
+      end as battedball_cd
 	, p.batter_id
 	, p.bat_side as bat_hand_cd
 	, p.pitcher_id
