@@ -164,8 +164,7 @@ select
 from mlbapi.warehouse_events we 
 left join runner_dests rd 
 on (we.game_pk = rd.game_pk 
-and we.event_id = rd.event_id
-and we.batter_id = rd.batter_id)
+and we.event_id = rd.event_id)
 where we.season = ", season, "and we.game_type = 'R' and we.level_id = 1", sep = "")
 
 events.data <- dbGetQuery(con1, events.query) %>% 
@@ -192,7 +191,8 @@ event_code_cases <- quos(
   .data$event_cd %in% out_codes 
   & .data$battedball_cd == "G" ~ "G",
   .data$event_cd %in% out_codes 
-  & .data$battedball_cd != "G" ~ "A",
+  & (.data$battedball_cd != "G" |
+       is.na(.data$battedball_cd))~ "A",
   .data$event_cd %in% normal_codes ~ as.character(.data$event_cd),
   TRUE ~ NA_character_)
 
@@ -493,3 +493,21 @@ brr_season_arm <- brr_season_arm %>%
   mutate(BRR_arm_per_cnt = sum(coalesce(BRR_arm,0))/sum(coalesce(count,0))) %>% 
   ungroup() %>% 
   mutate(BRR_arm = coalesce(BRR_arm,0) - coalesce(count,0)*BRR_arm_per_cnt)
+
+# Adding brr_run_season (successor to brr_season) at Harry's request
+brr_run_season <- baserunning_runs_raw %>% 
+  group_by(season, level_id, run_id) %>% 
+  summarize(
+    BRR_opps = n(),
+    BRR = sum(re_diff),
+    SBR_opps = sum(if_else(event == "SBA", 1, 0)),
+    SBR = sum(if_else(event == "SBA", re_diff, 0)),
+    HBR_opps = sum(if_else(event %in% normal_codes, 1, 0)),
+    HBR = sum(if_else(event %in% normal_codes, re_diff, 0)),  
+    GBR_opps = sum(if_else(event == "G", 1, 0)),
+    GBR = sum(if_else(event == "G", re_diff, 0)),
+    ABR_opps = sum(if_else(event == "A", 1, 0)),
+    ABR = sum(if_else(event == "A", re_diff, 0)),
+    OBR_opps = sum(if_else(event == "WPPB", 1, 0)),
+    OBR = sum(if_else(event == "WPPB", re_diff, 0))
+  )
