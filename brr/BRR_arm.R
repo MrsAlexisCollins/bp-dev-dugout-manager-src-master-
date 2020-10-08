@@ -27,7 +27,7 @@ from (SELECT season, level_id, outs_ct, event_outs_ct
 		, COUNT(*) AS Num
 	FROM mlbapi.warehouse_events we 
 	WHERE season = ", season,
-	"and game_type = 'R' and level_id = 1
+	"and level_id = 1
 	GROUP BY season, level_id, outs_ct, event_outs_ct, end_outs_ct ) t
 inner join legacy_models.runner_runs re1 
 on (re1.season = t.season 
@@ -51,40 +51,32 @@ re_diff_run.data.wide <- re_diff_run.data%>%
 # Getting events data for the rest of the script 
 events.query <- paste(
   "with baseout_mod as (
-	SELECT DISTINCT baseout.game_pk,
-    	        baseout.at_bat_index,
-            	last_value(baseout.event_index) OVER w AS event_index_end,
-            	last_value(baseout.outs_pre) OVER w AS outs_pre,
-            	last_value(baseout.away_score_pre) over w AS away_score_pre,
-            	last_value(baseout.home_score_pre) OVER w AS home_score_pre,
-            	last_value(baseout.firstbase_pre) OVER w AS firstbase_pre,
-            	last_value(baseout.secondbase_pre) OVER w AS secondbase_pre,
-            	last_value(baseout.thirdbase_pre) OVER w AS thirdbase_pre,
-            	last_value(baseout.outs_end) OVER w AS outs_end,
-            	last_value(baseout.away_score_end) OVER w AS away_score_end,
-            	last_value(baseout.home_score_end) OVER w AS home_score_end,
-            	last_value(baseout.firstbase_end) OVER w AS firstbase_end,
-            	last_value(baseout.secondbase_end) OVER w AS secondbase_end,
-            	last_value(baseout.thirdbase_end) OVER w AS thirdbase_end
-	FROM mlbapi.baseout baseout
-	join mlbapi.games_schedule_deduped gs ON baseout.game_pk = gs.game_pk AND left(gs.status_code, 1) = 'F'::text
-	where gs.season = ", season, "and gs.game_type = 'R' and gs.level_id = 1 
-	window w as (PARTITION BY baseout.game_pk, baseout.at_bat_index ORDER BY baseout.event_index RANGE BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING)
-),
+	select *
+	from mlbapi.baseout bo
+	inner join 
+	(select distinct on (game_pk, at_bat_index, event_index)
+		r.game_pk, r.at_bat_index, r.event_index, 
+		row_number() over(partition by r.game_pk order by r.at_bat_index, r.event_index) as seq_event_id
+  	from mlbapi.runners r
+  	join mlbapi.games_schedule_deduped gs ON r.game_pk = gs.game_pk AND left(gs.status_code, 1) = 'F'::text
+  	where gs.season = ", season, "and gs.game_type = 'R' and gs.level_id = 1 
+ 	) ue using (game_pk, at_bat_index, event_index)
+ ),
 start_base_tbl as (
-	select game_pk, at_bat_index, 
+	select game_pk, at_bat_index, event_index, seq_event_id,
 		   unnest(array[1, 2, 3]) AS start_base,
-       	   unnest(array[firstbase_pre, secondbase_pre, thirdbase_pre]) AS id
+       	   unnest(array[firstbase_start, secondbase_start, thirdbase_start]) AS id
     from baseout_mod),
 end_base_tbl as (
-	select game_pk, at_bat_index, 
+	select game_pk, at_bat_index, event_index, seq_event_id, 
 		unnest(array[1, 2, 3]) AS end_base,
        	unnest(array[firstbase_end, secondbase_end, thirdbase_end]) AS id
     from baseout_mod), 
 on_base_stayers as (
-	select sb.game_pk, sb.at_bat_index, sb.id as runner_id, sb.start_base, eb.end_base
+	select sb.game_pk, sb.at_bat_index, sb.event_index, sb.seq_event_id, sb.id as runner_id, sb.start_base, eb.end_base
 	from start_base_tbl sb 
-	inner join end_base_tbl eb using (game_pk, at_bat_index, id)
+	inner join end_base_tbl eb using (game_pk, at_bat_index, event_index, id)
+	order by game_pk, seq_event_id, start_base
 ),
 wide_dest as (
 	select 
@@ -92,7 +84,7 @@ wide_dest as (
  		p.inning,  
   		case when p.half_inning = 'top' then 0 else 1 end as bat_home_id, 
   		at_bat_index,
-  		event_index as ab_ev, 
+  		event_index, 
   		runner_id, 
   		min( (case when start_base is null then 0 
   			  else left(start_base,1)::int end) ) as start_base, 
@@ -103,24 +95,24 @@ wide_dest as (
 	from mlbapi.runners r 
 	left join mlbapi.plays p using (game_pk, at_bat_index) 
 	join mlbapi.games_schedule_deduped gs ON p.game_pk = gs.game_pk AND left(gs.status_code, 1) = 'F'::text
-	where gs.season = ", season, "and gs.game_type = 'R' and gs.level_id = 1 
-	group by p.game_pk, p.inning, p.half_inning, event_index, at_bat_index, runner_id
+	where gs.season = ", season, "and gs.game_type = 'R' and gs.level_id = 1 --gs.game_pk = 581872
+	group by p.game_pk, p.inning, p.half_inning, at_bat_index, event_index, runner_id
 	order by p.game_pk, at_bat_index, runner_id, start_base),
-wide_dest_final as (
-	select game_pk, at_bat_index, runner_id, min(start_base) as start_base, case when bool_or(end_base = 0) then 0 else max(end_base) end as end_base
+	wide_dest_final as (
+	select game_pk, at_bat_index, event_index, runner_id, min(start_base) as start_base, case when bool_or(end_base = 0) then 0 else max(end_base) end as end_base
 	from (
-		select wd.game_pk, wd.at_bat_index, wd.runner_id, wd.start_base, wd.end_base 	
+		select wd.game_pk, wd.at_bat_index, wd.event_index, wd.runner_id, wd.start_base, wd.end_base 	
 		from wide_dest wd
 		union all
-		select obs.game_pk, obs.at_bat_index, obs.runner_id, obs.start_base, obs.end_base
+		select obs.game_pk, obs.at_bat_index, obs.event_index,obs.runner_id, obs.start_base, obs.end_base
 		from on_base_stayers obs 
 		order by game_pk, at_bat_index, start_base
 	) combined_runner_transition
-	group by game_pk, at_bat_index, runner_id
-	order by game_pk, at_bat_index, start_base),
-runner_dests as (
+	group by game_pk, at_bat_index, event_index, runner_id
+	order by game_pk, at_bat_index, event_index, start_base),
+	runner_dests as (
 	select 
-    	game_pk, at_bat_index as event_id,
+    	game_pk, at_bat_index, event_index,
     	unnest(array_agg(runner_id) filter(where start_base = 0)) as batter_id,
     	unnest(array_agg(end_base) filter(where start_base = 0)) as batter_dest_id,
 		unnest(array_agg(runner_id) filter(where start_base = 1)) as run1_id, 
@@ -130,42 +122,44 @@ runner_dests as (
 		unnest(array_agg(runner_id) filter(where start_base = 3)) as run3_id, 
 		unnest(array_agg(end_base) filter(where start_base = 3))::int as run3_dest_id
 	from wide_dest_final 
-	group by game_pk, at_bat_index)
+	group by game_pk, at_bat_index, event_index)
 select 
-	we.season,
-	we.level_id, 
-	we.game_pk,
-	we.inn_ct,
-	we.event_id, 
-	we.outs_ct,
-	we.event_cd, 
-	we.battedball_cd,
-	we.fld_team,
-	we.fld_cd,
-	we.pitcher_id,
-	we.pos2_fld_id,
-	we.pos3_fld_id,
-	we.pos4_fld_id,
-	we.pos5_fld_id,
+ 	we.season,
+ 	we.level_id, 
+ 	we.game_pk,
+ 	we.inn_ct,
+ 	we.at_bat_index,
+ 	we.event_index, 
+ 	we.outs_ct,
+ 	we.event_cd, 
+ 	we.battedball_cd,
+ 	we.fld_team,
+ 	we.fld_cd,
+ 	we.pitcher_id,
+ 	we.pos2_fld_id,
+ 	we.pos3_fld_id,
+ 	we.pos4_fld_id,
+ 	we.pos5_fld_id,
   we.pos6_fld_id,
-	we.pos7_fld_id,
-	we.pos8_fld_id,
-	we.pos9_fld_id,
-	we.run1_origin_event_id,
-	we.run2_origin_event_id, 
-	we.run3_origin_event_id, 
+ 	we.pos7_fld_id,
+ 	we.pos8_fld_id,
+ 	we.pos9_fld_id,
+	we.batter_id,
 	coalesce(rd.batter_dest_id, 0) as batter_dest_id, 
-	rd.run1_id, coalesce(rd.run1_dest_id, 0) as run1_dest_id, 
-	rd.run2_id, coalesce(rd.run2_dest_id, 0) as run2_dest_id, 
-	rd.run3_id, coalesce(rd.run3_dest_id, 0) as run3_dest_id,
-	we.ass1_fld_cd, 
-	we.ass2_fld_cd,
+	we.run1_origin_event_id, rd.run1_id, coalesce(rd.run1_dest_id, 0) as run1_dest_id, 
+	we.run2_origin_event_id, rd.run2_id, coalesce(rd.run2_dest_id, 0) as run2_dest_id, 
+	we.run3_origin_event_id, rd.run3_id, coalesce(rd.run3_dest_id, 0) as run3_dest_id,
+  we.ass1_fld_cd, 
+  we.ass2_fld_cd,
 	we.ass3_fld_cd
 from mlbapi.warehouse_events we 
-left join runner_dests rd 
+inner join runner_dests rd 
 on (we.game_pk = rd.game_pk 
-and we.event_id = rd.event_id)
-where we.season = ", season, "and we.game_type = 'R' and we.level_id = 1", sep = "")
+and we.at_bat_index = rd.at_bat_index 
+and we.event_index = rd.event_index)
+join mlbapi.games_schedule_deduped gs ON we.game_pk = gs.game_pk AND left(gs.status_code, 1) = 'F'::text
+  	where gs.season = ", season, " and gs.game_type = 'R' and gs.level_id = 1", sep = ""
+)
 
 events.data <- dbGetQuery(con1, events.query) %>% 
   filter(event_cd %in% BRR_qualifying_event_codes)
@@ -253,7 +247,8 @@ baserunning_runs.run1 <- baserunning_runs.run1 %>%
             level_id,
             game_pk,
             inn_ct, 
-            event_id,
+            at_bat_index,
+            event_index,
             outs_ct, 
             run_id = run1_id,
             fld_team, 
@@ -321,7 +316,8 @@ baserunning_runs.run2 <- baserunning_runs.run2 %>%
             level_id,
             game_pk,
             inn_ct, 
-            event_id,
+            at_bat_index,
+            event_index,
             outs_ct, 
             run_id = run1_id,
             fld_team, 
@@ -395,7 +391,8 @@ baserunning_runs.run3 <- baserunning_runs.run3 %>%
             level_id,
             game_pk,
             inn_ct, 
-            event_id,
+            at_bat_index,
+            event_index,
             outs_ct, 
             run_id = run1_id,
             fld_team, 
