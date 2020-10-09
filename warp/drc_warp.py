@@ -174,10 +174,10 @@ for season in pos_adj:
 
 query = """
 SELECT season, level_id, bpid, SUM(raa_reg) AS fraa FROM
-  (SELECT DISTINCT ON (season, level_id, bpid) 
+  (SELECT DISTINCT ON (season, level_id, bpid, pos) 
      season, level_id, bpid, pos, raa_reg
    FROM models.fraa_daily
-   ORDER BY season, level_id, bpid, version DESC) fraa_pos
+   ORDER BY season, level_id, bpid, pos, version DESC) fraa_pos
 GROUP BY (season, level_id, bpid)
 """
 cage_cur.execute(query)
