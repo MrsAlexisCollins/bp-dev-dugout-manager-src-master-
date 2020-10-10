@@ -10,10 +10,11 @@ pacman::p_load(RPostgres,
 
 ### acquire data ###
 
-## Open DB Connection (requires my.con1.maker.R) ####
-source("my.conpg.maker.R") #your con1 <- mysql with your credentials
-con1 <- dbConnect(RPostgreSQL::PostgreSQL(),user=con_pg.user,password=con_pg.password,dbname=con_pg.dbname,host=con_pg.host)
-rm(con_pg.password)
+## Open DB Connection (requires my.cage.maker.R) ####
+source("creds.R") #your cage <- mysql with your credentials
+cage <- dbConnect(RPostgreSQL::PostgreSQL(),user=cage.user,password=cage.password,dbname=cage.dbname,host=cage.host)
+rm(cage.password)
+
 ## 0 - Variables for use later
 BRR_qualifying_event_codes <- c(2,4,6,9,10,18,19,20,21,22) # This is a powerful set of variables 
 
@@ -40,7 +41,7 @@ and t.end_outs_ct = re2.outs
 and re1.base = re2.base)", sep = "")
 
 
-re_diff_run.data <- dbGetQuery(con1, re_diff_run.query)
+re_diff_run.data <- dbGetQuery(cage, re_diff_run.query)
 re_diff_run.data.wide <- re_diff_run.data%>%   
   pivot_wider(
     names_from = base,
@@ -161,7 +162,7 @@ join mlbapi.games_schedule_deduped gs ON we.game_pk = gs.game_pk AND left(gs.sta
   	where gs.season = ", season, " and gs.game_type = 'R' and gs.level_id = 1", sep = ""
 )
 
-events.data <- dbGetQuery(con1, events.query) %>% 
+events.data <- dbGetQuery(cage, events.query) %>% 
   filter(event_cd %in% BRR_qualifying_event_codes)
 
 ## Augmenting and cleaning the event data for all of the necessary processes.
@@ -482,6 +483,12 @@ brr_season_arm <- baserunning_runs_raw %>%
             count = n()) %>%
   ungroup()
 
+people_xrefs <- dbGetQuery(cage, paste0("SELECT * FROM xrefs.people_refs WHERE xref_type='mlb'"))  %>%
+  mutate_at(vars(xref_id), list(as.numeric))
+teams_xrefs <- dbGetQuery(cage, paste0("SELECT * FROM xrefs.teams_refs WHERE xref_type='mlbam'")) %>%
+  mutate_at(vars(xref_id), list(as.numeric))
+max_date <- dbGetQuery(cage, paste("SELECT max(official_date)::date::text FROM mlbapi.games_schedule WHERE game_type = 'R' AND level_id=1 AND left(status_code, 1) = 'F' AND season=", season, sep=""));
+max_date <- max_date$max[1]
 
 # Now we obtain league average runs saved per chance, and then de-mean again 
 # to get our final values 
@@ -489,7 +496,18 @@ brr_season_arm <- brr_season_arm %>%
   group_by(season, level_id, fld_cd) %>%
   mutate(BRR_arm_per_cnt = sum(coalesce(BRR_arm,0))/sum(coalesce(count,0))) %>% 
   ungroup() %>% 
-  mutate(BRR_arm = coalesce(BRR_arm,0) - coalesce(count,0)*BRR_arm_per_cnt)
+  mutate(BRR_arm = coalesce(BRR_arm,0) - coalesce(count,0)*BRR_arm_per_cnt) %>%
+  inner_join(teams_xrefs, by = c("fld_team" = "xref_id")) %>%
+  inner_join(people_xrefs, by = c("fld_id" = "xref_id")) %>%
+  rename(team_id = teams_id,
+    brr_arm = BRR_arm,
+    brr_arm_per_cnt = BRR_arm_per_cnt) %>%
+  add_column(version = max_date) %>%
+  select(season, level_id, bpid, fld_cd, team_id, brr_arm, count, 
+    brr_arm_per_cnt, version) 
+
+dbSendQuery(cage, paste0("DELETE FROM models.brr_arm_daily WHERE version = '", max_date, "'", sep=""))
+dbWriteTable(cage, c("models", "brr_arm_daily"), brr_season_arm, row.names=FALSE, append=TRUE)
 
 # Adding brr_run_season (successor to brr_season) at Harry's request
 brr_run_season <- baserunning_runs_raw %>% 
@@ -499,12 +517,33 @@ brr_run_season <- baserunning_runs_raw %>%
     BRR = sum(re_diff),
     SBR_opps = sum(if_else(event == "SBA", 1, 0)),
     SBR = sum(if_else(event == "SBA", re_diff, 0)),
-    HBR_opps = sum(if_else(event %in% normal_codes, 1, 0)),
-    HBR = sum(if_else(event %in% normal_codes, re_diff, 0)),  
-    GBR_opps = sum(if_else(event == "G", 1, 0)),
-    GBR = sum(if_else(event == "G", re_diff, 0)),
-    ABR_opps = sum(if_else(event == "A", 1, 0)),
-    ABR = sum(if_else(event == "A", re_diff, 0)),
-    OBR_opps = sum(if_else(event == "WPPB", 1, 0)),
-    OBR = sum(if_else(event == "WPPB", re_diff, 0))
-  )
+    HAR_opps = sum(if_else(event %in% normal_codes, 1, 0)),
+    HAR = sum(if_else(event %in% normal_codes, re_diff, 0)),  
+    GAR_opps = sum(if_else(event == "G", 1, 0)),
+    GAR = sum(if_else(event == "G", re_diff, 0)),
+    AAR_opps = sum(if_else(event == "A", 1, 0)),
+    AAR = sum(if_else(event == "A", re_diff, 0)),
+    OAR_opps = sum(if_else(event == "WPPB", 1, 0)),
+    OAR = sum(if_else(event == "WPPB", re_diff, 0))
+  ) %>%
+  inner_join(people_xrefs, by = c("run_id" = "xref_id")) %>%
+  rename(
+    brr = BRR,
+    brr_opps = BRR_opps,
+    sbr = SBR,
+    sbr_opps = SBR_opps,
+    har = HAR,
+    har_opps = HAR_opps,
+    gar = GAR,
+    gar_opps = GAR_opps,
+    aar = AAR,
+    aar_opps = AAR_opps,
+    oar = OAR,
+    oar_opps = OAR_opps) %>%
+  add_column(version = max_date) %>%
+  select(season, level_id, bpid, brr_opps, brr, sbr_opps, sbr, 
+    har_opps, har, gar_opps, gar, aar_opps, aar, oar_opps, oar, version)
+    
+dbSendQuery(cage, paste0("DELETE FROM models.brr_daily WHERE version = '", max_date, "'", sep=""))
+dbWriteTable(cage, c("models", "brr_daily"), brr_run_season, row.names=FALSE, append=TRUE)
+
