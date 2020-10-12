@@ -71,8 +71,9 @@ query_events_PVR <- paste("SELECT
 		   							  WHEN c.half_inning = 'bottom' THEN 1 ELSE null end)
 		   WHERE e.season = c.season
 		   	AND e.level_id = c.level_id
-		   	AND e.level_id = 1 AND e.game_type = 'R'
+		   	AND e.level_id = 1 
 		   AND e.season =",season,sep = "")
+# Removed AND e.game_type = 'R' because of the many differences in warehouse_events
 
 events_PVR <- dbGetQuery(cage, query_events_PVR) %>% 
   filter(event_cd %in% FRAA_qualifying_event_codes) # Get only the qualifying event codes
@@ -241,8 +242,9 @@ query_events_LAPPraw <- paste("SELECT
 		   , run1_origin_event_id 
 		   , run2_origin_event_id
        FROM cage.mlbapi.warehouse_events e
-		   WHERE level_id = 1 AND game_type = 'R'
+		   WHERE level_id = 1 
 		   AND season=",season,sep = "")
+# Removed AND game_type = 'R' because of warehouse_event variation.
 
 events_LAPPraw <- dbGetQuery(cage, query_events_LAPPraw) 
 
@@ -417,7 +419,7 @@ events_LAPPraw <- events_LAPPraw %>% ungroup()
 # First, add the steal play flag 
 
 data_steal_plays_adj <- events_LAPPraw %>% 
-  mutate(steal_flag = if_else(run1_origin_event_id > 0 & run2_origin_event_id == 0, 1, 0),
+  mutate(steal_flag = if_else(!is.na(run1_origin_event_id) & is.na(run2_origin_event_id), 1, 0),
          first_base_PM = case_when(!!! first_base_PM_cases)) %>%
   inner_join(data_state_adj, by = c("season", "level_id", "startbases_cd", "outs_ct")) %>%
   inner_join(data_steal_plays_raw, by = c("season", "level_id")) %>% 
@@ -583,7 +585,8 @@ query_events_plays_made_raw <- paste("SELECT
         season
 		   , level_id
 		   , game_pk
-		   , event_id
+		   , at_bat_index
+		   , event_index
        , inn_ct
 		   , bat_home_id
 		   , home_team
@@ -616,8 +619,9 @@ query_events_plays_made_raw <- paste("SELECT
 		   , run1_origin_event_id 
 		   , run2_origin_event_id
        FROM cage.mlbapi.warehouse_events e
-		   WHERE level_id = 1 and game_type = 'R'
+		   WHERE level_id = 1 
 		   AND season=",season,sep = "")
+# Removed and game_type = 'R' because of warehouse_events changes
 
 events_plays_made_raw <- dbGetQuery(cage, query_events_plays_made_raw) 
 
@@ -635,7 +639,7 @@ events_plays_made_raw <- events_plays_made_raw %>%
     is_pitcher_hitting == 1 ~ "P",
     TRUE ~ "N"),
     steal_flag = 
-      if_else(run1_origin_event_id > 0 & run2_origin_event_id == 0, 1, 0))
+      if_else(!is.na(run1_origin_event_id) & is.na(run2_origin_event_id), 1, 0))
 
 # Now we need to have per-position checks for plays made 
 # First base has already been handled above
@@ -729,7 +733,7 @@ data_obs_pm_raw <- events_plays_made_raw  %>%
              by = c("season", "level_id", "startbases_cd", "outs_ct"))
 
 data_obs_pm_raw <- data_obs_pm_raw %>%
-  transmute(season, game_pk, event_id, level_id, fld_team,
+  transmute(season, game_pk, at_bat_index, event_index, level_id, fld_team,
             bat_hand_cd, bat_type, home_team,
             pitcher_id, pos2_fld_id, pos3_fld_id, pos4_fld_id,
             pos5_fld_id, pos6_fld_id, pos7_fld_id, pos8_fld_id, pos9_fld_id,
