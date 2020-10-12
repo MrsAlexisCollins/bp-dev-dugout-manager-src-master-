@@ -222,9 +222,9 @@ events.data <- events.data %>%
 
 
 test <- events.data %>% 
-  filter((run1_origin_event_id > 0 & is.na(run1_id)) |
-         (run2_origin_event_id > 0 & is.na(run2_id)) |
-         (run3_origin_event_id > 0 & is.na(run3_id)) )
+  filter((!is.na(run1_origin_event_id) & is.na(run1_id)) |
+         (!is.na(run2_origin_event_id) & is.na(run2_id)) |
+         (!is.na(run3_origin_event_id) & is.na(run3_id)) )
 ## 2 - Average run expectancy per base(?)
 
 ## Filter for each starting base, have separate DFs, then bind based on base. 
@@ -232,9 +232,9 @@ test <- events.data %>%
 # In fact, we can just get tables of events relevant to each type of baserunner, I think.
 
 run1.events <- events.data %>% 
-  filter(run1_origin_event_id > 0, 
-         run2_origin_event_id == 0, 
-         (run3_origin_event_id == 0 | event == "SBA"))
+  filter(!is.na(run1_origin_event_id), 
+         is.na(run2_origin_event_id), 
+         (is.na(run3_origin_event_id) | event == "SBA"))
 
 # Now, we can join the expectancy table.
 baserunning_runs.run1 <- run1.events %>% 
@@ -302,8 +302,8 @@ baserunning_runs.run1 <- baserunning_runs.run1 %>%
          
 # Repeat the process for the runner starting at 2nd. 
 run2.events <- events.data %>% 
-  filter(run2_origin_event_id > 0, 
-         run3_origin_event_id == 0)
+  filter(!is.na(run2_origin_event_id), 
+         is.na(run3_origin_event_id))
 
 # Now, we can join the expectancy table.
 baserunning_runs.run2 <- run2.events %>% 
@@ -378,7 +378,7 @@ baserunning_runs.run2 <- baserunning_runs.run2 %>%
 
 # And one more time for the runner starting at 3rd 
 run3.events <- events.data %>% 
-  filter(run3_origin_event_id > 0)
+  filter(!is.na(run3_origin_event_id))
 
 # Now, we can join the expectancy table.
 baserunning_runs.run3 <- run3.events %>% 
