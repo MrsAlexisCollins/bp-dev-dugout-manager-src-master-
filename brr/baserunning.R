@@ -530,6 +530,7 @@ brr_run_season <- baserunning_runs_raw %>%
     OAR_opps = sum(if_else(event == "WPPB", 1, 0)),
     OAR = sum(if_else(event == "WPPB", re_diff, 0))
   ) %>%
+  ungroup() %>%
   inner_join(people_xrefs, by = c("run_id" = "xref_id")) %>%
   rename(
     brr = BRR,
@@ -570,6 +571,7 @@ brr_run_team <- baserunning_runs_raw %>%
     OAR_opps = sum(if_else(event == "WPPB", 1, 0)),
     OAR = sum(if_else(event == "WPPB", re_diff, 0))
   ) %>% 
+  ungroup() %>%
   inner_join(teams_xrefs, by = c("bat_team" = "xref_id")) %>%
   inner_join(people_xrefs, by = c("run_id" = "xref_id")) %>%
   rename(team_id = teams_id,
@@ -589,5 +591,5 @@ brr_run_team <- baserunning_runs_raw %>%
   select(season, level_id, bpid, team_id, brr_opps, brr, sbr_opps, sbr, 
     har_opps, har, gar_opps, gar, aar_opps, aar, oar_opps, oar, version)
 	
-dbSendQuery(cage, paste0("DELETE FROM models.brr_daily WHERE version = '", max_date, "'", sep=""))
+dbSendQuery(cage, paste0("DELETE FROM models.brr_team_daily WHERE version = '", max_date, "'", sep=""))
 dbWriteTable(cage, c("models", "brr_team_daily"), brr_run_team, row.names=FALSE, append=TRUE)
