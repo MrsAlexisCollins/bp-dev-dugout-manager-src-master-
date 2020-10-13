@@ -547,3 +547,43 @@ brr_run_season <- baserunning_runs_raw %>%
 dbSendQuery(cage, paste0("DELETE FROM models.brr_daily WHERE version = '", max_date, "'", sep=""))
 dbWriteTable(cage, c("models", "brr_daily"), brr_run_season, row.names=FALSE, append=TRUE)
 
+# One more thing, we need to add runner/team stints -- what was classically 
+# `brr_team_year`. We're calling it `brr_run_team` here 
+# because it's more clear about the grouping
+brr_run_team <- baserunning_runs_raw %>% 
+  group_by(season, level_id, run_id, bat_team) %>%
+  summarize(
+    BRR_opps = n(),
+    BRR = sum(re_diff),
+    SBR_opps = sum(if_else(event == "SBA", 1, 0)),
+    SBR = sum(if_else(event == "SBA", re_diff, 0)),
+    HAR_opps = sum(if_else(event %in% normal_codes, 1, 0)),
+    HAR = sum(if_else(event %in% normal_codes, re_diff, 0)),  
+    GAR_opps = sum(if_else(event == "G", 1, 0)),
+    GAR = sum(if_else(event == "G", re_diff, 0)),
+    AAR_opps = sum(if_else(event == "A", 1, 0)),
+    AAR = sum(if_else(event == "A", re_diff, 0)),
+    OAR_opps = sum(if_else(event == "WPPB", 1, 0)),
+    OAR = sum(if_else(event == "WPPB", re_diff, 0))
+  ) %>% 
+  inner_join(teams_xrefs, by = c("bat_team" = "xref_id")) %>%
+  inner_join(people_xrefs, by = c("run_id" = "xref_id")) %>%
+  rename(team_id = teams_id,
+    brr = BRR,
+    brr_opps = BRR_opps,
+    sbr = SBR,
+    sbr_opps = SBR_opps,
+    har = HAR,
+    har_opps = HAR_opps,
+    gar = GAR,
+    gar_opps = GAR_opps,
+    aar = AAR,
+    aar_opps = AAR_opps,
+    oar = OAR,
+    oar_opps = OAR_opps) %>%
+  add_column(version = max_date) %>%
+  select(season, level_id, bpid, team_id, brr_opps, brr, sbr_opps, sbr, 
+    har_opps, har, gar_opps, gar, aar_opps, aar, oar_opps, oar, version)
+	
+dbSendQuery(cage, paste0("DELETE FROM models.brr_daily WHERE version = '", max_date, "'", sep=""))
+dbWriteTable(cage, c("models", "brr_team_daily"), brr_run_team, row.names=FALSE, append=TRUE)
