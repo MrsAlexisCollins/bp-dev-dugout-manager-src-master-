@@ -37,7 +37,7 @@ batter_lwts_official.query <- paste(
     , AVG(CASE WHEN me.event_cd = 3 THEN r.re_diff
         ELSE me.event_runs_lwts+r.re_diff END) AS LWTS 
 FROM 
-( SELECT e.season, e.level_id, e.game_type, e.game_pk, e.inn_ct, e.bat_home_id, e.event_cd
+( SELECT e.season, e.level_id, e.game_pk, e.inn_ct, e.bat_home_id, e.event_cd
 	, e.startbases_cd, e.outs_ct
 	, e.event_outs_ct
 	, (case when e.event_cd between 14 and 16 then
