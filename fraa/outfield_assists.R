@@ -37,7 +37,7 @@ batter_lwts_official.query <- paste(
     , AVG(CASE WHEN me.event_cd = 3 THEN r.re_diff
         ELSE me.event_runs_lwts+r.re_diff END) AS LWTS 
 FROM 
-( SELECT e.season, e.level_id, e.game_type, e.game_pk, e.inn_ct, e.bat_home_id, e.event_cd
+( SELECT e.season, e.level_id, e.game_pk, e.inn_ct, e.bat_home_id, e.event_cd
 	, e.startbases_cd, e.outs_ct
 	, e.event_outs_ct
 	, (case when e.event_cd between 14 and 16 then
@@ -92,8 +92,10 @@ INNER JOIN
 							 AND me.BAT_HOME_ID = (CASE WHEN c.half_inning = 'top' THEN 0 
 													   WHEN c.half_inning = 'bottom' THEN 1 
 													   ELSE null end) 
-WHERE me.event_cd != 17 and me.game_type = 'R' and me.level_id = 1 and me.season = ", season,
+WHERE me.event_cd != 17 and me.level_id = 1 and me.season = ", season,
 "GROUP BY me.season, me.level_id, me.startbases_cd, me.outs_ct, EVENT", sep = "")
+# Removed and me.game_type = 'R' from above query because warehouse_events no longer has that column.
+
 
 batter_lwts_official.data <- dbGetQuery(cage, batter_lwts_official.query) 
 
@@ -154,8 +156,10 @@ events.query <- paste("SELECT
       event_outs_ct,
       endbases_cd
       FROM cage.mlbapi.warehouse_events e
-		  WHERE level_id = 1 and game_type = 'R'
+		  WHERE level_id = 1 
 		  AND season=",season,sep = "")
+# Removed and game_type = 'R' from above query because warehouse_events no longer has this column.
+
 
 # Get the query and also recode all outs to singles (for the purposes of this)
 events.data <- dbGetQuery(cage, events.query) %>% 
