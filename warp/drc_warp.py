@@ -48,6 +48,8 @@ draa = nested_dict(3, float)
 fraa = nested_dict(3, float)
 cda = nested_dict(3, float)
 ofa = nested_dict(3, float)
+brr = nested_dict(3, float)
+brr_arm = nested_dict(3, float)
 pos_adj = nested_dict(3, float)
 rep_level = nested_dict(3, float)
 drc_warp = nested_dict(3, float)
@@ -237,6 +239,45 @@ for row in dugout_cur:
     if drc_warp[season][level_id][bpid] is not None:
         drc_warp[season][level_id][bpid] += value
 
+query = """
+SELECT DISTINCT ON (season, level_id, bpid) 
+   season, level_id, bpid, brr
+FROM models.brr_daily
+ORDER BY season, level_id, bpid, version DESC
+"""
+cage_cur.execute(query)
+for row in cage_cur:
+    season, level_id, bpid, value = row
+    brr[season][level_id][bpid] = value
+    if bpid not in drc_warp[season][level_id]:
+        print(f"Found BRR but not DRAA/POS/REP for {bpid} in " + \
+            f"{season}-{level_id}")
+        continue
+    if drc_warp[season][level_id][bpid] is not None:
+        drc_warp[season][level_id][bpid] += value
+
+query = """
+SELECT season, level_id, bpid, SUM(brr_arm) AS brr_arm FROM
+  (SELECT DISTINCT ON (season, level_id, bpid, fld_cd, team_id) 
+     season, level_id, bpid, fld_cd, team_id, brr_arm
+   FROM models.brr_arm_daily
+   ORDER BY season, level_id, bpid, fld_cd, team_id, version DESC)
+brr_arm_pos_team
+GROUP BY (season, level_id, bpid)
+"""
+cage_cur.execute(query)
+for row in cage_cur:
+    season, level_id, bpid, value = row
+    brr_arm[season][level_id][bpid] = value
+    if bpid not in drc_warp[season][level_id]:
+        print(f"Found BRR but not DRAA/POS/REP for {bpid} in " + \
+            f"{season}-{level_id}")
+        continue
+    if drc_warp[season][level_id][bpid] is not None:
+        drc_warp[season][level_id][bpid] += value
+
+
+
 def replace_none(value):
     if value is None:
         return '\\N'
@@ -251,10 +292,9 @@ for season in drc_warp:
             buffer.write("|".join(
                 [str(season), str(level_id), str(bpid)] + 
                 [replace_none(x[season][level_id][bpid]) for x in 
-                    (drc_warp, draa, fraa, ofa, cda, pos_adj, rep_level)] + \
-                ["0", # brr
-                 "0", # brr_arm
-                 str(rpw[season][level_id]), str(max_date)]))
+                    (drc_warp, draa, fraa, ofa, cda, pos_adj, rep_level,
+                     brr, brr_arm)] + \
+                [str(rpw[season][level_id]), str(max_date)]))
             buffer.write("\n")
         
 cage_cur.execute("DELETE FROM models.drc_warp WHERE version = '" + \

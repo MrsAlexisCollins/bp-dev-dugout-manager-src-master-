@@ -1,0 +1,14 @@
+mysql.dbname <- "lwts"
+mysql.host <- "50.19.97.46"
+mysql.password <- ""
+mysql.user <- ""
+
+cage.dbname <- "cage"
+cage.host <- "172.104.15.153"
+cage.password <- ""
+cage.user <- ""
+
+dugout.dbname <- "dugout"
+dugout.host <- "172.104.15.153"
+dugout.password <- ""
+dugout.user <- ""
