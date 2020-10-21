@@ -1,0 +1,251 @@
+#!/usr/bin/python3
+
+import io
+import json
+import psycopg2
+import sys
+
+with open("creds.json", "r") as fd:
+    creds = json.load(fd)
+
+try:
+    cage = psycopg2.connect(dbname = creds['cage']['database'],
+        user =     creds['cage']['username'],
+        password = creds['cage']['password'],
+        host =     creds['cage']['host'])
+except psycopg2.Error as err:
+    print(e.pgerror)
+    sys.exit(1)
+
+try:
+    cage_api = psycopg2.connect(dbname = creds['cage_api']['database'],
+        user =     creds['cage_api']['username'],
+        password = creds['cage_api']['password'],
+        host =     creds['cage_api']['host'])
+except psycopg2.Error as err:
+    print(e.pgerror)
+    sys.exit(1)
+
+try:
+    dugout = psycopg2.connect(dbname = creds['dugout']['database'],
+        user =     creds['dugout']['username'],
+        password = creds['dugout']['password'],
+        host =     creds['dugout']['host'])
+except psycopg2.Error as err:
+    print(e.pgerror)
+    sys.exit(1)
+
+latest_date = ''
+season = 2020
+cage_cur = cage.cursor()
+cage_cur.execute("SELECT MAX(timestamp::date) FROM mlbapi.stats_ytd_hitting")
+for row in cage_cur:
+    latest_date = row[0]
+if latest_date == '':
+    print("Couldn't find a max timestamp from mlbapi.stats_ytd_hitting!")
+    print("Exiting...")
+    sys.exit(1)
+
+query = f"""
+WITH primary_pos AS (
+  SELECT DISTINCT ON (id) id, primary_position 
+  FROM mlbapi.people_mutables
+  ORDER BY id, timestamp DESC
+), syh AS (
+  SELECT DISTINCT ON (id, season, team) *
+  FROM mlbapi.stats_ytd_hitting
+  ORDER BY id, season, team, timestamp DESC
+), drc AS (
+  SELECT DISTINCT ON (year, lvl, bpid) *
+  FROM models.drc_daily
+  ORDER BY year, lvl, bpid, comp_date DESC
+), fraa AS (
+  SELECT season, level_id, bpid, SUM(raa_reg) AS fraa FROM
+    (SELECT DISTINCT ON (season, level_id, bpid, pos)
+       season, level_id, bpid, pos, raa_reg
+     FROM models.fraa_daily
+     ORDER BY season, level_id, bpid, pos, version DESC) fraa_pos
+  GROUP BY (season, level_id, bpid)
+), ofa AS (
+  SELECT season, level_id, bpid, SUM(of_ast_fraa) AS of_ast_fraa FROM
+    (SELECT DISTINCT ON (season, level_id, team_id, bpid)
+       season, level_id, team_id, bpid, of_ast_fraa
+     FROM models.ofa_daily
+     ORDER BY season, level_id, team_id, bpid, version DESC) ofa_team
+  GROUP BY (season, level_id, bpid)
+), brr AS (
+  SELECT DISTINCT ON (season, level_id, bpid) *
+  FROM models.brr_daily
+  ORDER BY season, level_id, bpid, version DESC
+), warp AS (
+  SELECT DISTINCT ON (season, level_id, bpid)
+    season, level_id, bpid, drc_warp 
+  FROM models.drc_warp
+  ORDER BY season, level_id, bpid, version desc
+)
+SELECT pn.first_last_name AS name,
+  x.bpid AS batter,
+  x.bpid AS playerid,
+  syh.season AS year,
+  DATE_PART('year', AGE(MAKE_DATE(DATE_PART('year', NOW())::INT, 7, 1),
+    pb.birth_date))::INT AS age,
+  CASE t.abbreviation 
+    WHEN 'CWS' THEN 'CHW'
+    WHEN 'WSH' THEN 'WAS'
+    ELSE t.abbreviation
+  END AS TEAM,
+  lvl.code AS lvl,
+  lg.abbreviation AS lg,
+  warp.drc_warp,
+  drc."dRC_plus" AS drc_plus,
+  drc."dRC_SD" AS drc_sd,
+  drc."dRAA" AS drc_raa,
+  syh.games_played AS g,
+  syh.plate_appearances AS pa,
+  syh.at_bats AS ab,
+  syh.runs AS r,
+  syh.hits AS h,
+  syh.hits - syh.doubles - syh.triples - syh.home_runs AS b1,
+  syh.doubles AS b2,
+  syh.triples AS b3,
+  syh.home_runs AS hr,
+  syh.total_bases AS tb,
+  syh.base_on_balls + syh.intentional_walks AS bb,
+  syh.strike_outs AS so,
+  syh.rbi AS rbi,
+  syh.stolen_bases AS sb,
+  syh.caught_stealing AS cs,
+  brr.brr AS brr,
+  syh.avg AS avg,
+  syh.obp AS obp,
+  syh.slg AS slg,
+  syh.ops AS ops,
+  coalesce(fraa.fraa, 0) + coalesce(ofa.of_ast_fraa, 0) AS fraa,
+  -- add in cda below
+  syh.intentional_walks AS ibb,
+  syh.hit_by_pitch AS hbp,
+  syh.sac_flies AS sf,
+  syh.sac_bunts AS sh,
+  syh.ground_into_double_play AS dp,
+  syh.slg - syh.avg AS iso,
+  CASE 
+    WHEN syh.at_bats - syh.strike_outs - syh.home_runs + syh.sac_flies <= 0 
+    THEN NULL
+    ELSE (syh.hits - syh.home_runs)::real/(syh.at_bats - syh.strike_outs 
+      - syh.home_runs + syh.sac_flies)
+  END AS babip,
+  CASE pos.code WHEN 'I' THEN '4' WHEN 'O' THEN '7' ELSE pos.code END AS primary_pos,
+  syh.timestamp::date AS version_date,
+  FLOOR(DATE_PART('epoch', AGE(syh.timestamp::date, '1799-12-31')) /
+    (3600*24))::INT AS version_day_num,
+  'season' AS split_type,
+  'ytd' AS split_value
+  FROM syh
+  LEFT JOIN primary_pos USING (id)
+  LEFT JOIN mlbapi.positions pos ON pos.abbrev = primary_pos.primary_position 
+  LEFT JOIN mlbapi.people_names pn USING (id)
+  LEFT JOIN mlbapi.people_birth pb USING (id)
+  LEFT JOIN mlbapi.teams t ON t.id = syh.team
+  LEFT JOIN mlbapi.leagues lg ON t.league = lg.id
+  LEFT JOIN mlbapi.levels lvl ON t.level = lvl.id
+  LEFT JOIN xrefs.people_refs x 
+    ON x.xref_type = 'mlb' AND x.xref_id::INT = syh.id
+  LEFT JOIN drc
+    ON drc.year = syh.season AND drc.bpid = x.bpid AND drc.lvl = lvl.code
+  LEFT JOIN fraa
+    ON fraa.season = syh.season AND fraa.bpid = x.bpid 
+    AND fraa.level_id = t.level
+  LEFT JOIN ofa
+    ON ofa.season = syh.season AND ofa.bpid = x.bpid 
+    AND ofa.level_id = t.level
+  LEFT JOIN brr
+    ON brr.season = syh.season AND brr.bpid = x.bpid
+    AND brr.level_id = t.level
+  LEFT JOIN warp
+    ON warp.season = syh.season AND warp.bpid = x.bpid 
+    AND warp.level_id = t.level
+  WHERE syh.season={season}
+"""
+bat_columns = ('name', 'batter', 'playerid', 'year', 'age', 'team', 'lvl', 'lg',
+    'drc_warp', 'drc_plus', 'drc_sd', 'drc_raa', 'g', 'pa', 'ab', 'r', 'h',
+    'b1', 'b2', 'b3', 'hr', 'tb', 'bb', 'so', 'rbi', 'sb', 'cs', 'brr', 'avg',
+    'obp', 'slg', 'ops', 'fraa', 'ibb', 'hbp', 'sf', 'sh', 'dp', 'iso',
+    'babip', 'primary_pos', 'version_date', 'version_day_num', 'split_type', 
+    'split_value')
+bat_columns_new = ('name', 'batter', 'bpid', 'season', 'age', 'team_name',
+    'level_name', 'lg',
+    'drc_warp', 'drc_plus', 'drc_sd', 'drc_raa', 'g', 'pa', 'ab', 'r', 'h',
+    'b1', 'b2', 'b3', 'hr', 'tb', 'bb', 'so', 'rbi', 'sb', 'cs', 'brr', 'avg',
+    'obp', 'slg', 'ops', 'fraa', 'ibb', 'hbp', 'sf', 'sh', 'dp', 'iso',
+    'babip', 'primary_pos', 'version', 'version_day_num', 'split_type', 
+    'split_value')
+version_date_col = bat_columns.index('version_date')
+fraa_col = bat_columns.index('fraa')
+batter_col = bat_columns.index('batter')
+
+cage_cur = cage.cursor()
+cage_cur.execute(query)
+
+api_cur = cage_api.cursor()
+dugout_cur = dugout.cursor()
+
+cda = {}
+query = f"""
+SELECT catcher, sum(fraa_adj) AS cda
+FROM (
+  SELECT DISTINCT ON (year, lvl, catcher, team)
+  year, lvl, catcher, team, fraa_adj
+  FROM stats.catch_master
+  WHERE year={season} AND lvl='mlb' AND fraa_adj IS NOT NULL
+  ORDER BY year, lvl, catcher, team, version_date DESC
+) cda_team
+GROUP BY catcher
+"""
+dugout_cur.execute(query)
+for row in dugout_cur:
+    cda[row[0]] = row[1]
+
+def convert_none(value):
+    if value is None:
+        return '\\N'
+    else:
+        return str(value)
+
+buffer = io.StringIO()
+for row in cage_cur:
+    #print("\n".join([f"{i}: {j}" for i, j in zip(bat_columns, row)]))
+    fields = list(row)
+    if fields[version_date_col] != latest_date:
+        print("Skipping old row: " +
+            ", ".join([convert_none(x) for x in fields]))
+        continue
+    if fields[batter_col] in cda:
+        fields[fraa_col] += cda[fields[batter_col]]
+    buffer.write("|".join([convert_none(x) for x in fields]))
+    buffer.write("\n")
+    #break
+
+api_cur.execute("DELETE FROM api.bat_master WHERE version_date=%s::text",
+    (latest_date,))
+dugout_cur.execute("DELETE FROM stats.bat_master WHERE version=%s",
+    (latest_date,))
+buffer.seek(0)
+api_cur.copy_from(buffer, "api.bat_master", sep="|",
+    columns=bat_columns)
+buffer.seek(0)
+dugout_cur.copy_from(buffer, "stats.bat_master", sep="|",
+    columns=bat_columns_new)
+buffer.close()
+cage_api.commit()
+dugout.commit()
+
+query = """UPDATE api.bat_master_yearend SET max_version_date=%s
+WHERE ye_lvl = 'mlb' AND ye_year = 2020"""
+api_cur.execute(query, (latest_date,))
+cage_api.commit()
+
+query = """UPDATE stats.bat_master_yearend SET max_version_date=%s
+WHERE ye_lvl = 'mlb' AND ye_year = 2020"""
+dugout_cur.execute(query, (latest_date,))
+dugout.commit()
+

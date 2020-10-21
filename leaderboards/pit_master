@@ -1,0 +1,204 @@
+#!/usr/bin/python3
+
+import io
+import json
+import psycopg2
+import sys
+
+with open("creds.json", "r") as fd:
+    creds = json.load(fd)
+
+try:
+    cage = psycopg2.connect(dbname = creds['cage']['database'],
+        user =     creds['cage']['username'],
+        password = creds['cage']['password'],
+        host =     creds['cage']['host'])
+except psycopg2.Error as err:
+    print(e.pgerror)
+    sys.exit(1)
+
+try:
+    cage_api = psycopg2.connect(dbname = creds['cage_api']['database'],
+        user =     creds['cage_api']['username'],
+        password = creds['cage_api']['password'],
+        host =     creds['cage_api']['host'])
+except psycopg2.Error as err:
+    print(e.pgerror)
+    sys.exit(1)
+
+try:
+    dugout = psycopg2.connect(dbname = creds['dugout']['database'],
+        user =     creds['dugout']['username'],
+        password = creds['dugout']['password'],
+        host =     creds['dugout']['host'])
+except psycopg2.Error as err:
+    print(e.pgerror)
+    sys.exit(1)
+
+latest_date = ''
+cage_cur = cage.cursor()
+cage_cur.execute("SELECT MAX(timestamp::date) FROM mlbapi.stats_ytd_pitching")
+for row in cage_cur:
+    latest_date = row[0]
+if latest_date == '':
+    print("Couldn't find a max timestamp from mlbapi.stats_ytd_pitching!")
+    print("Exiting...")
+    sys.exit(1)
+
+query = """
+WITH syp AS (
+  SELECT DISTINCT ON (id, season, team) *
+  FROM mlbapi.stats_ytd_pitching
+  ORDER BY id, season, team, timestamp DESC
+), dra AS (
+  SELECT DISTINCT ON (year, lvl, bpid) *
+  FROM models.dra_daily
+  ORDER BY year, lvl, bpid, comp_date DESC
+), dra_warp AS (
+  SELECT DISTINCT ON (season, level_id, bpid) *
+  FROM models.dra_warp
+  ORDER BY season, level_id, bpid, comp_date DESC
+)
+SELECT syp.season AS year,
+  lvl.code AS lvl,
+  x.bpid AS pitcher,
+  pn.first_last_name AS name,
+  DATE_PART('year', AGE(MAKE_DATE(DATE_PART('year', NOW())::INT, 7, 1),
+    pb.birth_date))::INT AS age,
+  CASE t.abbreviation 
+    WHEN 'CWS' THEN 'CHW'
+    WHEN 'WSH' THEN 'WAS'
+    ELSE t.abbreviation
+  END AS team,
+  lg.abbreviation AS lg,
+  syp.wins AS w,
+  syp.losses AS l,
+  syp.saves AS sv,
+  syp.blown_saves AS bs,
+  syp.holds AS hd,
+  syp.games_pitched AS g,
+  syp.games_started AS gs,
+  syp.games_finished AS gf,
+  syp.complete_games AS cg,
+  syp.shutouts AS sho,
+  FLOOR(syp.innings_pitched)::INT*3 + (10*(syp.innings_pitched -
+    FLOOR(syp.innings_pitched)))::INT AS ipouts,
+  FLOOR(syp.innings_pitched) + (syp.innings_pitched -
+    FLOOR(syp.innings_pitched))::REAL*10.0/3.0 AS ip,
+  syp.runs AS r,
+  syp.earned_runs AS er,
+  syp.stolen_bases AS sb,
+  syp.caught_stealing AS cs,
+  syp.pickoffs AS pickoff,
+  syp.batters_faced AS pa,
+  syp.at_bats AS ab,
+  syp.hits AS h,
+  syp.hits - syp.doubles - syp.triples - syp.home_runs AS b1,
+  syp.doubles AS b2,
+  syp.triples AS b3,
+  syp.home_runs AS hr,
+  syp.total_bases AS tb,
+  syp.base_on_balls + syp.intentional_walks AS bb,
+  syp.base_on_balls AS ubb,
+  syp.intentional_walks AS ibb,
+  syp.hit_batsmen AS hbp,
+  syp.wild_pitches AS wp,
+  syp.strike_outs AS so,
+  syp.balks AS bk,
+  syp.ground_into_double_play AS gidp,
+  syp.era AS era,
+  CASE WHEN syp.innings_pitched = 0 THEN NULL ELSE
+    fip.fip_const +(13*syp.home_runs + 3*syp.base_on_balls +
+    3*syp.intentional_walks + 3*syp.hit_batsmen - 2*syp.strike_outs) /
+    (FLOOR(syp.innings_pitched) + 10::real * (syp.innings_pitched -
+     FLOOR(syp.innings_pitched))/3::real) END AS fip,
+  dra."DRA_final" AS dra,
+  dra_warp.dra_pwarp,
+  dra."DRA_SD" AS dra_sd,
+  dra."DRA_minus" AS dra_minus,
+  dra."cFIP" AS cfip,
+  syp.number_of_pitches AS pitches,
+  pn.last_first_name AS sortable_name,
+  syp.timestamp::date AS version_date,
+  FLOOR(DATE_PART('epoch', AGE(syp.timestamp::date, '1799-12-31')) /
+    (3600*24))::INT AS version_day_num,
+  x.bpid AS playerid,
+  'season' AS split_type,
+  'ytd' AS split_value
+  FROM syp
+  LEFT JOIN mlbapi.people_names pn USING (id)
+  LEFT JOIN mlbapi.people_birth pb USING (id)
+  LEFT JOIN mlbapi.teams t ON t.id = syp.team
+  LEFT JOIN mlbapi.leagues lg ON t.league = lg.id
+  LEFT JOIN mlbapi.levels lvl ON t.level = lvl.id
+  LEFT JOIN xrefs.people_refs x 
+    ON x.xref_type = 'mlb' AND x.xref_id::INT = syp.id
+  LEFT JOIN dra
+    ON dra.year = syp.season AND dra.bpid = x.bpid AND dra.lvl = lvl.code
+  LEFT JOIN dra_warp ON syp.season = dra_warp.season AND 
+    x.bpid = dra_warp.bpid
+  LEFT JOIN models.fip_const fip ON fip.season = syp.season
+
+  WHERE syp.season=2020
+"""
+pit_columns = ('year', 'lvl', 'pitcher', 'name', 'age', 'team', 'lg', 'w', 
+    'l', 'sv', 'bs', 'hd', 'g', 'gs', 'gf', 'cg', 'sho', 'ipouts', 'ip', 
+    'r', 'er', 'sb', 'cs', 'pickoff', 'pa', 'ab', 'h', 'b1', 'b2', 'b3', 
+    'hr', 'tb', 'bb', 'ubb', 'ibb', 'hbp', 'wp', 'so', 'bk', 'gidp', 'era', 
+    'fip', 'dra', 'dra_pwarp', 'dra_sd', 'dra_minus', 'cfip', 'pitches',
+    'sortable_name', 'version_date', 'version_day_num', 'playerid',
+    'split_type', 'split_value')
+pit_columns_new = ('season', 'level_name', 'pitcher', 'name', 'age', 
+    'team_name', 'lg', 'w', 
+    'l', 'sv', 'bs', 'hd', 'g', 'gs', 'gf', 'cg', 'sho', 'ipouts', 'ip', 
+    'r', 'er', 'sb', 'cs', 'pickoff', 'pa', 'ab', 'h', 'b1', 'b2', 'b3', 
+    'hr', 'tb', 'bb', 'ubb', 'ibb', 'hbp', 'wp', 'so', 'bk', 'gidp', 'era', 
+    'fip', 'dra', 'dra_pwarp', 'dra_sd', 'dra_minus', 'cfip', 'pitches',
+    'sortable_name', 'version', 'version_day_num', 'bpid', 'split_type',
+    'split_value')
+version_date_col = pit_columns.index('version_date')
+
+cage_cur.execute(query)
+
+api_cur = cage_api.cursor()
+dugout_cur = dugout.cursor()
+
+def convert_none(value):
+    if value is None:
+        return '\\N'
+    else:
+        return str(value)
+
+buffer = io.StringIO()
+for row in cage_cur:
+    if row[version_date_col] != latest_date:
+        print("Skipping old row: " + 
+            ", ".join([convert_none(x) for x in row]))
+        continue
+    buffer.write("|".join([convert_none(x) for x in row]))
+    buffer.write("\n")
+    #break
+api_cur.execute("DELETE FROM api.pit_master WHERE version_date=%s::text",
+    (latest_date,))
+dugout_cur.execute("DELETE FROM stats.pit_master WHERE version=%s",
+    (latest_date,))
+
+buffer.seek(0)
+api_cur.copy_from(buffer, "api.pit_master", sep="|",
+    columns=pit_columns)
+buffer.seek(0)
+dugout_cur.copy_from(buffer, "stats.pit_master", sep="|",
+    columns=pit_columns_new)
+buffer.close()
+cage_api.commit()
+dugout.commit()
+
+query = """UPDATE api.pit_master_yearend SET max_version_date=%s 
+WHERE ye_lvl = 'mlb' AND ye_year = 2020"""
+api_cur.execute(query, (latest_date,))
+cage_api.commit()
+
+query = """UPDATE stats.pit_master_yearend SET max_version_date=%s 
+WHERE ye_lvl = 'mlb' AND ye_year = 2020"""
+dugout_cur.execute(query, (latest_date,))
+dugout.commit()

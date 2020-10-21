@@ -1,0 +1,20 @@
+{
+    "cage_api": {
+        "host":     "",
+        "username": "",
+        "password": "",
+        "database": "postgres"
+    },
+    "cage": {
+        "host":     "",
+        "username": "",
+        "password": "",
+        "database": "cage"
+    },
+    "dugout": {
+        "host":     "",
+        "username": "",
+        "password": "",
+        "database": "dugout"
+    }
+}

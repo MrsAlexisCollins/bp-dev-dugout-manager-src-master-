@@ -1,0 +1,270 @@
+#!/usr/bin/python3
+
+import io
+import json
+import psycopg2
+import sys
+
+with open("creds.json", "r") as fd:
+    creds = json.load(fd)
+
+try:
+    cage = psycopg2.connect(dbname = creds['cage']['database'],
+        user =     creds['cage']['username'],
+        password = creds['cage']['password'],
+        host =     creds['cage']['host'])
+except psycopg2.Error as err:
+    print(e.pgerror)
+    sys.exit(1)
+
+try:
+    cage_api = psycopg2.connect(dbname = creds['cage_api']['database'],
+        user =     creds['cage_api']['username'],
+        password = creds['cage_api']['password'],
+        host =     creds['cage_api']['host'])
+except psycopg2.Error as err:
+    print(e.pgerror)
+    sys.exit(1)
+
+try:
+    dugout = psycopg2.connect(dbname = creds['dugout']['database'],
+        user =     creds['dugout']['username'],
+        password = creds['dugout']['password'],
+        host =     creds['dugout']['host'])
+except psycopg2.Error as err:
+    print(e.pgerror)
+    sys.exit(1)
+
+latest_date = ''
+cage_cur = cage.cursor()
+cage_cur.execute("SELECT MAX(timestamp::date) FROM mlbapi.stats_ytd_catching")
+for row in cage_cur:
+    latest_date = row[0]
+if latest_date == '':
+    print("Couldn't find a max timestamp from mlbapi.stats_ytd_hitting!")
+    print("Exiting...")
+    sys.exit(1)
+
+query = """
+WITH syc AS (
+  SELECT DISTINCT ON (id, season, team) *
+  FROM mlbapi.stats_ytd_catching
+  ORDER BY id, season, team, timestamp DESC
+), csaa AS (
+  SELECT DISTINCT ON (year, lvl, bpid) *
+  FROM models.csaa_catcher_season_daily
+  ORDER BY year, lvl, bpid, comp_date DESC
+), epaa AS (
+  SELECT DISTINCT ON (season, lvl, bpid) *
+  FROM models.epaa_catcher_season_daily
+  ORDER BY season, lvl, bpid, comp_date DESC
+), sraa AS (
+  SELECT DISTINCT ON (season, lvl, bpid) *
+  FROM models.sraa_catcher_season_daily
+  ORDER BY season, lvl, bpid, comp_date DESC
+), traa AS (
+  SELECT DISTINCT ON (season, lvl, bpid) *
+  FROM models.traa_catcher_season_daily
+  ORDER BY season, lvl, bpid, comp_date DESC
+), pitches AS (
+  SELECT DISTINCT
+    pe.game_pk, pe.at_bat_index, gs.season, gs.level_id
+    , pe.event_type, pe.play_id
+    , pe.description 
+    , p.outs
+    , p.description as outcome
+    , p.event
+    , p.event_type 
+    , p2.catcher_mlbid 
+    , CASE WHEN (on_1b IS NOT NULL OR 
+                 on_2b IS NOT NULL OR 
+                 on_3b IS NOT NULL) 
+           THEN 1 ELSE 0 END AS mob
+    , CASE WHEN (LOWER(p.description) LIKE '%pick%' OR 
+                 LOWER(pe.description) LIKE '%pick%') AND 
+                from_catcher = true 
+           THEN 1 ELSE 0 END AS pick_event
+    , CASE WHEN (LOWER(p.description) LIKE '%throwing error by catcher%' AND
+                 p.description LIKE '%on the pickoff attempt%') OR
+                (LOWER(pe.description) LIKE '%throwing error by catcher%' AND 
+                 pe.description like '%on the pickoff attempt%') 
+           THEN 1 ELSE 0 END AS error
+    , CASE WHEN ((LOWER(p.description) LIKE '%picked off%' OR 
+                  LOWER(p.description) LIKE '%picks off%') AND
+                 LOWER(p.description) LIKE '%catcher%') OR 
+                ((LOWER(pe.description) LIKE '%picked off%' OR 
+                  LOWER(pe.description) LIKE '%picks off%') AND 
+                 LOWER(pe.description) LIKE '%catcher%') 
+           THEN 1 ELSE 0 END AS kill
+  FROM mlbapi.plays p 
+  JOIN mlbapi.play_events pe 
+  ON p.game_pk = pe.game_pk AND p.at_bat_index = pe.at_bat_index 
+  JOIN mlbapi.games_schedule gs ON p.game_pk = gs.game_pk 
+  LEFT JOIN mlbapi.pitches mp ON pe.game_pk = mp.game_pk AND 
+    pe.at_bat_index = mp.at_bat_index AND 
+    (pe.event_index = mp.pitch_number OR pe.event_index = mp.event_index + 1)
+  LEFT JOIN pitchinfo.pitches2020 p2 ON mp.play_id = p2.tm_guid
+  WHERE gs.game_type = 'R'
+    AND gs.level_id = 1
+    AND gs.season = 2020
+    AND NOT (p.balls = 0 AND p.strikes = 0 AND pe.description LIKE '%In play%')--take out first-pitch BIP where no chance to pickoff
+), atbats AS (	--get the catcher and if a pickoff occured in each PA
+  SELECT --some lost non-mob ABs, some lost double-pick atts (4 in 2019-mlb-R)
+    season, game_pk, at_bat_index, level_id
+    , MAX(catcher_mlbid) AS catcher_mlbid
+    , COUNT(DISTINCT MD5(row(game_pk::text, at_bat_index::text)::text)) AS pa
+    , MAX(mob) AS mob
+    , MAX(pick_event) AS pick_event	--don't sum these
+    , MAX(error) AS error
+    , MAX(kill) AS kill
+  FROM pitches
+  GROUP BY season, game_pk, at_bat_index, level_id
+), po AS (
+  SELECT 
+    season, level_id, catcher_mlbid, p.full_name, sum(pa) as pa 
+    , sum(mob) as pa_mob 
+    , sum(pick_event) as attempts
+    , sum(error) as errors
+    , sum(kill) as kills
+    , sum(pick_event) * 1.0 / nullif(sum(mob), 0) as attempt_rate
+    , sum(kill) * 1.0 / nullif(sum(pick_event), 0) as kill_rate
+    , sum(error) * 1.0 / nullif(sum(pick_event), 0) as error_rate
+    from atbats a
+    join mlbapi.people p on cast(a.catcher_mlbid as int) = p.id 
+    group by season, level_id, catcher_mlbid, p.full_name
+    order by attempts desc
+)  
+SELECT syc.season AS year,
+  lvl.code AS lvl,
+  x.bpid AS catcher,
+  pn.first_last_name AS name,
+  DATE_PART('year', AGE(MAKE_DATE(DATE_PART('year', NOW())::INT, 7, 1),
+    pb.birth_date))::INT AS age,
+  csaa.chances * csaa.csaa * r.cs AS csaa_runs,
+  csaa.chances AS csaa_chances,
+  csaa.credited AS csaa_extra_strikes,
+  csaa.average AS csaa_actual_strikes,
+  csaa.predicted AS csaa_predicted_strikes,
+  csaa.csaa,
+  csaa.csaa_sd,
+  csaa.chances * csaa.csaa_sd * r.cs AS csaa_runs_sd,
+  epaa.chances * epaa.epaa * r.ep AS epaa_runs,
+  epaa.chances AS epaa_chances,
+  epaa.actual_pb AS epaa_actual_pb,
+  epaa.actual_wp AS epaa_actual_wp,
+  epaa.predicted_pb AS epaa_predicted_pb,
+  epaa.predicted_wp AS epaa_predicted_wp,
+  epaa.epaa AS epaa,
+  sraa.chances * sraa.sraa * r.sr AS sraa_runs,
+  sraa.chances AS sraa_chances,
+  sraa.sraa * sraa.chances AS sraa_credited,
+  sraa.sraa AS sraa,
+  CASE WHEN traa.traa < 0 THEN 0
+    ELSE COALESCE(traa.chances * traa.traa * r.tr, 0) END AS traa_runs,
+  traa.chances AS traa_chances,
+  traa.traa * traa.chances AS traa_credited,
+  traa.traa AS traa,
+  sraa.chances * sraa.sraa * r.sr + 
+    CASE WHEN traa.traa < 0 THEN 0
+    ELSE COALESCE(traa.chances * traa.traa * r.tr, 0) END AS throwing_runs,
+  csaa.chances * csaa.csaa * r.cs +
+    epaa.chances * epaa.epaa * r.ep +
+    po.errors * r.po_error + po.kills * r.po_out +
+    sraa.chances * sraa.sraa * r.sr + 
+    CASE WHEN traa.traa < 0 THEN 0
+    ELSE COALESCE(traa.chances * traa.traa * r.tr, 0) END AS fraa_adj,
+  po.pa_mob AS po_chances,
+  po.kills AS po_outs,
+  po.errors AS po_e2,
+  po.attempts AS po_throws,
+  po.errors * r.po_error + po.kills * r.po_out AS po_runs,
+  lg.abbreviation AS lg,
+  CASE t.abbreviation 
+    WHEN 'CWS' THEN 'CHW'
+    WHEN 'WSH' THEN 'WAS'
+    ELSE t.abbreviation
+  END AS team,
+  1 AS stint,
+  syc.timestamp::date AS version_date,
+  FLOOR(DATE_PART('epoch', AGE(syc.timestamp::date, '1799-12-31')) /
+    (3600*24))::INT AS version_day_num,
+  x.bpid AS playerid,
+  'season' AS split_type,
+  'ytd' AS split_value
+  FROM syc
+  LEFT JOIN mlbapi.people_names pn USING (id)
+  LEFT JOIN mlbapi.people_birth pb USING (id)
+  LEFT JOIN mlbapi.teams t ON t.id = syc.team
+  LEFT JOIN mlbapi.leagues lg ON t.league = lg.id
+  LEFT JOIN mlbapi.levels lvl ON t.level = lvl.id
+  LEFT JOIN xrefs.people_refs x 
+    ON x.xref_type = 'mlb' AND x.xref_id::INT = syc.id
+  LEFT JOIN models.cda_event_run_values r 
+    ON syc.season = r.season AND lvl.code = r.level_name
+  LEFT JOIN csaa
+    ON csaa.year = syc.season AND csaa.bpid::INT = x.bpid 
+    AND csaa.lvl = lvl.code
+  LEFT JOIN epaa
+    ON epaa.season = syc.season AND epaa.bpid::INT = x.bpid 
+    AND epaa.lvl = lvl.code
+  LEFT JOIN sraa
+    ON sraa.season = syc.season AND sraa.bpid::INT = x.bpid 
+    AND sraa.lvl = lvl.code
+  LEFT JOIN traa
+    ON traa.season = syc.season AND traa.bpid::INT = x.bpid 
+    AND traa.lvl = lvl.code
+  LEFT JOIN po 
+    ON po.season = syc.season AND po.catcher_mlbid::INT = syc.id 
+    AND po.level_id = t.level
+  WHERE syc.season=2020
+"""
+catch_columns = ('year', 'lvl', 'catcher', 'name', 'age', 'csaa_runs',
+    'csaa_chances', 'csaa_extra_strikes', 'csaa_actual_strikes', 
+    'csaa_predicted_strikes', 'csaa', 'csaa_sd', 'csaa_runs_sd',
+    'epaa_runs', 'epaa_chances', 'epaa_actual_pb', 'epaa_actual_wp', 
+    'epaa_predicted_pb', 'epaa_predicted_wp', 'epaa',
+    'sraa_runs', 'sraa_chances', 'sraa_credited', 'sraa', 
+    'traa_runs', 'traa_chances', 'traa_credited', 'traa', 
+    'throwing_runs', 'fraa_adj',
+    'po_chances', 'po_outs', 'po_e2', 'po_throws', 'po_runs',
+    'lg', 'team', 'stint', 'version_date', 'version_day_num', 'playerid', 
+    'split_type', 'split_value')
+
+cage_cur = cage.cursor()
+cage_cur.execute(query)
+
+api_cur = cage_api.cursor()
+dugout_cur = dugout.cursor()
+
+def convert_none(value):
+    if value is None:
+        return '\\N'
+    else:
+        return str(value)
+
+buffer = io.StringIO()
+for row in cage_cur:
+    #print("\n".join([f"{i}: {j}" for i, j in zip(bat_columns, row)]))
+    buffer.write("|".join([convert_none(x) for x in row]))
+    buffer.write("\n")
+    #break
+api_cur.execute("DELETE FROM api.catch_master WHERE version_date=%s::text",
+    (latest_date,))
+dugout_cur.execute("DELETE FROM stats.catch_master WHERE version_date=%s",
+    (latest_date,))
+
+buffer.seek(0)
+api_cur.copy_from(buffer, "api.catch_master", sep="|",
+    columns=catch_columns)
+buffer.seek(0)
+dugout_cur.copy_from(buffer, "stats.catch_master", sep="|",
+    columns=catch_columns)
+buffer.close()
+cage_api.commit()
+dugout.commit()
+
+query = """UPDATE api.catch_master_yearend SET max_version_date=%s
+WHERE ye_lvl = 'mlb' AND ye_year = 2020"""
+api_cur.execute(query, (latest_date,))
+cage_api.commit()
+
