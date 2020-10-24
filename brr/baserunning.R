@@ -484,6 +484,9 @@ brr_season_arm <- baserunning_runs_raw %>%
          !ass3_fld_cd %in% outfielder_codes) %>% 
   group_by(season, level_id, fld_id, fld_cd, fld_team) %>% 
   summarize(BRR_arm = -sum(re_diff), 
+            HBR = sum(if_else(event %in% normal_codes, re_diff, 0)),
+            GBR = sum(if_else(event == "G", re_diff, 0)),
+            ABR = sum(if_else(event == "A", re_diff, 0)),
             count = n()) %>%
   ungroup()
 
