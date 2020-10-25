@@ -52,6 +52,9 @@ CREATE TABLE IF NOT EXISTS models.brr_arm_daily (
     brr_arm     double precision,
     count       int4,
     brr_arm_per_cnt double precision,
+	hbr         double precision,
+	gbr         double precision,
+	abr         double precision,
     version     date
 );
 
