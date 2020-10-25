@@ -508,10 +508,13 @@ brr_season_arm <- brr_season_arm %>%
   inner_join(people_xrefs, by = c("fld_id" = "xref_id")) %>%
   rename(team_id = teams_id,
     brr_arm = BRR_arm,
-    brr_arm_per_cnt = BRR_arm_per_cnt) %>%
+    brr_arm_per_cnt = BRR_arm_per_cnt,
+    hbr = HBR,
+    gbr = GBR,
+    abr = ABR) %>%
   add_column(version = max_date) %>%
   select(season, level_id, bpid, fld_cd, team_id, brr_arm, count, 
-    brr_arm_per_cnt, version) 
+    brr_arm_per_cnt, hbr, gbr, abr, version) 
 
 dbSendQuery(cage, paste0("DELETE FROM models.brr_arm_daily WHERE version = '", max_date, "'", sep=""))
 dbWriteTable(cage, c("models", "brr_arm_daily"), brr_season_arm, row.names=FALSE, append=TRUE)
