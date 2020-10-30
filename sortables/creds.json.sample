@@ -1,0 +1,15 @@
+{
+    "cage": {
+        "host":     "172.104.15.153",
+        "username": "",
+        "password": "",
+        "database": "cage"
+    },
+    "dugout": {
+        "host":     "172.104.15.153",
+        "username": "",
+        "password": "",
+        "database": "dugout",
+        "string": "postgresql://user:pass@172.104.15.153:5432/dugout"
+    }
+}
