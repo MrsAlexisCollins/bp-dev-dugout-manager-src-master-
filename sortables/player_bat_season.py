@@ -53,4 +53,9 @@ for d, data in enumerate(stats):
 
     final = pd.merge(final, df, how = how, left_on = q.join_key, right_on = q.join_key)  # https://stackoverflow.com/a/52478901
 
+# try:
+#     final.to_csv("bat.csv", index = False)
+# except PermissionError:
+#     pass
+
 final.to_sql(name = q.table_name, con = engine, if_exists= 'replace', index = False, schema = 'stats')

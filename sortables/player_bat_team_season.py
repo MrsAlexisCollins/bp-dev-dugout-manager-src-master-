@@ -5,7 +5,7 @@ import psycopg2
 from psycopg2.extras import DictCursor
 from sqlalchemy import create_engine
 import pandas as pd
-import player_pitch_season_queries as q
+import player_bat_team_season_queries as q
 
 with open("creds.json", "r") as fd:
     creds = json.load(fd)
@@ -19,7 +19,7 @@ except psycopg2.Error as err:
     print(e.pgerror)
     sys.exit(1)
 
-engine = create_engine(creds['dugout']['string'])
+engine = create_engine(creds['dugout']['string'])  #postgresql://user:pass@host:port/dbname
 
 cage_cur = cage.cursor(cursor_factory=DictCursor)
 
@@ -48,14 +48,18 @@ for d, data in enumerate(stats):
 
     if d == 0:  # inner join to drop non-season participants in full people_search
         how = "inner"
+        join_key = q.join_key[:-1]  # first join doesn't need team_id, should remove this in a more explicit way
     else:
         how = "left"
+        join_key = q.join_key
 
-    final = pd.merge(final, df, how = how, left_on = q.join_key, right_on = q.join_key)  # https://stackoverflow.com/a/52478901
+    final = pd.merge(final, df, how = how, left_on = join_key, right_on = join_key)  # https://stackoverflow.com/a/52478901
 
 # try:
-#     final.to_csv("pitch.csv", index = False)
+#     final.to_csv("bat_team.csv", index = False)
 # except PermissionError:
 #     pass
 
 final.to_sql(name = q.table_name, con = engine, if_exists= 'replace', index = False, schema = 'stats')
+
+# cage.commit()
