@@ -109,6 +109,7 @@ query_zone = """
 
 """
 
+# this is bugged, stats_ytd_fielding is cumulative, not team-split
 query_field = """
     SELECT 
         season, level_id
@@ -117,16 +118,6 @@ query_field = """
         , sum(ip_full + ip_part) as innings
         , sum(errors) as errors 
         , sum(throwing_errors) as errors_throwing
-        , coalesce(sum(games) filter (where position = 'C'), 0) as g_c
-        , coalesce(sum(games) filter (where position = '1B'), 0) as g_1b
-        , coalesce(sum(games) filter (where position = '2B'), 0) as g_2b
-        , coalesce(sum(games) filter (where position = '3B'), 0) as g_3b
-        , coalesce(sum(games) filter (where position = 'SS'), 0) as g_ss
-        , coalesce(sum(games) filter (where position = 'LF'), 0) as g_lf
-        , coalesce(sum(games) filter (where position = 'CF'), 0) as g_cf
-        , coalesce(sum(games) filter (where position = 'RF'), 0) as g_rf
-        , coalesce(sum(games) filter (where position = 'DH'), 0) as g_dh
-        , coalesce(sum(games) filter (where position = 'P'), 0) as g_p
         , coalesce(sum(ip_full + ip_part) filter (where position = 'C'), 0) as ip_c
         , coalesce(sum(ip_full + ip_part) filter (where position = '1B'), 0) as ip_1b
         , coalesce(sum(ip_full + ip_part) filter (where position = '2B'), 0) as ip_2b
@@ -154,19 +145,29 @@ query_field = """
 query_field_pa = """
     SELECT 
         season, level_id, mlbid, team_id
-        , count(*) filter (where position = 'C') as PA_c
-        , count(*) filter (where position = '1B') as PA_1b
-        , count(*) filter (where position = '2B') as PA_2b
-        , count(*) filter (where position = '3B') as PA_3b
-        , count(*) filter (where position = 'SS') as PA_ss
-        , count(*) filter (where position = 'LF') as PA_lf
-        , count(*) filter (where position = 'CF') as PA_cf
-        , count(*) filter (where position = 'RF') as PA_rf
-        , count(*) filter (where position = 'DH') as PA_dh
-        , count(*) filter (where position = 'P') as PA_p
+        , count(*) filter (where position = 'C') as pa_c
+        , count(*) filter (where position = '1B') as pa_1b
+        , count(*) filter (where position = '2B') as pa_2b
+        , count(*) filter (where position = '3B') as pa_3b
+        , count(*) filter (where position = 'SS') as pa_ss
+        , count(*) filter (where position = 'LF') as pa_lf
+        , count(*) filter (where position = 'CF') as pa_cf
+        , count(*) filter (where position = 'RF') as pa_rf
+        , count(*) filter (where position = 'DH') as pa_dh
+        , count(*) filter (where position = 'P') as pa_p
+        , count(distinct game_pk) filter (where position = 'C') as g_c
+        , count(distinct game_pk) filter (where position = '1B') as g_1b
+        , count(distinct game_pk) filter (where position = '2B') as g_2b
+        , count(distinct game_pk) filter (where position = '3B') as g_3b
+        , count(distinct game_pk) filter (where position = 'SS') as g_ss
+        , count(distinct game_pk) filter (where position = 'LF') as g_lf
+        , count(distinct game_pk) filter (where position = 'CF') as g_cf
+        , count(distinct game_pk) filter (where position = 'RF') as g_rf
+        , count(distinct game_pk) filter (where position = 'DH') as g_dh
+        , count(distinct game_pk) filter (where position = 'P') as g_p     
     from (
         select
-            season, level_id
+            season, level_id, p.game_pk
             , case when half_inning = 'bottom' then away_team else home_team end as team_id
             , unnest(array['P', 'C', '1B', '2B', '3B', 'SS', 'LF', 'CF', 'RF', 'DH']) as position
             , unnest(array[f.pitcher_id, catcher_id, firstbaseman_id, secondbaseman_id, thirdbaseman_id, shortstop_id, leftfielder_id, centerfielder_id, rightfielder_id, designatedhitter_id]) as mlbid
@@ -250,7 +251,7 @@ query_drc = """
 
 queries = [query_standard
             , query_bb
-            , query_field
+            # , query_field     # bugged, see comment
             , query_field_pa
             , query_brr
             , query_opp
