@@ -61,3 +61,6 @@ for d, data in enumerate(stats):
 #     pass
 
 final.to_sql(name = q.table_name, con = engine, if_exists= 'replace', index = False, schema = 'stats')
+
+engine.execute("grant select on stats." + q.table_name + " to public;")
+engine.execute("grant all privileges on stats." + q.table_name + " to basecoach;")
