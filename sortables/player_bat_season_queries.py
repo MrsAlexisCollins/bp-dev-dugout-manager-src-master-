@@ -12,7 +12,7 @@ query_bio = """
         , pr.xref_id::int as mlbid
         , bpid
         , full_name as name
-        , date_part('day', concat({season}, '-07-01')::timestamp - birth_date::timestamp)/365.25 as age
+        , round((date_part('day', concat({season}, '-06-30')::timestamp - birth_date::timestamp)/365.25)::numeric, 0) as age
         , bats
         , throws
     from mlbapi.people_search ps 
